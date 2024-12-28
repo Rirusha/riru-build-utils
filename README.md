@@ -1,4 +1,4 @@
-Было ли у вас такое, что вы хотите собрать _Rirusha average application_?
+Было ли у вас такое, что вы хотите собрать _Rirusha average application_ для вашей _ALT Linux Operation Sustem_?
 
 Тогда вы по адресу!
 
@@ -12,3 +12,7 @@ FAQ:
 > Q: Могу ли я собрать не _Rirusha average application_?
 > 
 > A: Зачем?
+
+> Q: Что такое `girar`?
+> 
+> A: 🙄
