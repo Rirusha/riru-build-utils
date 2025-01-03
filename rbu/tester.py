@@ -1,5 +1,5 @@
 '''
-Copyright (C) 2024 Vladimir Vaskov
+Copyright (C) 2025 Vladimir Vaskov
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,3 +16,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 '''
+
+
+class Tester:
+    
+    def __init__(self):
+        raise NotImplementedError()
+        
+    def test(self):
+        pass

@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+'''
+Copyright (C) 2024 Vladimir Vaskov
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+SPDX-License-Identifier: GPL-3.0-or-later
+'''
+
+
+from subprocess import Popen
+import sys
+
+from rbu.utils import Constants
+from rbu.creator import Creator
+from rbu.tester import Tester
+from rbu.updater import Updater
+
+
+def print_help():
+    print ('Usage:')
+    print ('\trbu create')
+    print ('\trbu update <git url or alias> <tag>? <task-id-root>?')
+    print ('\trbu test')
+
+def main():    
+    argv = sys.argv.copy()
+
+    Constants.PKGDATADIR = "@pkgdatadir@"
+
+    argv.pop(0)
+    
+    if len(argv) == 0:
+        print('No command. Available: create, update, test')
+        print_help()
+        return
+
+    command = argv.pop(0)
+
+    match command:
+        case 'create':
+            create(argv)
+        case 'update':
+            update(argv)
+        case 'test':
+            test(argv)
+        case _:
+            print (f'Unknown command: {command}')
+            return
+
+def create (argv:list[str]):
+    if len(argv) > 0:
+        print ('Too many args.')
+        return
+
+    Creator().create()
+
+def update (argv:list[str]):
+    name:str = ""
+    tag:str|None = None
+    task_root:str|None = None
+
+    if len(argv) > 0:
+        name = argv.pop(0)
+
+        if len(argv) > 0:
+            tag = argv.pop(0)
+
+            if len(argv) > 0:
+                task_root = argv.pop(0)
+
+                if len(argv) > 0:
+                    print ('Too many args.')
+                    return
+    else:
+        print (f"Not enough args.")
+        return
+
+    Updater(name, tag, task_root).update()
+
+def test (argv:list[str]):
+    if len(argv) > 0:
+        print ('Too many args.')
+        return
+
+    Tester().test()
+
+
+if __name__ == '__main__':
+    main()
