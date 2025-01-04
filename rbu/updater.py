@@ -26,7 +26,7 @@ from subprocess import Popen
 import os
 
 import requests
-from rbu.aliases import Aliases
+from rbu.aliases import Alias, Aliases
 from rbu.utils import GITERY, GYLE, ask, get_package_repo_version, update_spec
 
 
@@ -37,10 +37,10 @@ class Updater:
     version:str|None
     tag:str|None
     root_task:str|None
-    aliases:Aliases
+    alias:Alias
     
     def __init__(self, name:str, tag:str|None, root_task:str|None):
-        self.aliases = Aliases()
+        aliases = Aliases()
         
         nname = name
         name = name.lower()
@@ -51,15 +51,17 @@ class Updater:
             if not name.endswith('.git'):
                 name += '.git'
             
-            name = self.aliases.find_by_url(name)
+            name = aliases.find_by_url(name)
             
             if name is None:
                 raise Exception(f'Alias for \'{nname}\' not found')
             
-        if self.aliases.get(name) is None:
+        self.alias = aliases.get(name)
+            
+        if self.alias is None:
             raise Exception(f'Alias \'{name}\' not found')
 
-        self.url = self.aliases.get(name).url
+        self.url = self.alias.url
         self.name = name
         self.tag = tag
         self.root_task = root_task
@@ -112,10 +114,10 @@ class Updater:
         sources_name = ''
         if self.url.startswith('https://github.com/'):
             archive_url = self.url.replace('.git', '') + f'/archive/refs/tags/{self.tag}.tar.gz'
-            sources_name = self.name + '-' + self.version
+            sources_name = self.alias.name + '-' + self.version
         elif self.url.startswith('https://gitlab.gnome.org/'):
-            archive_url = self.url.replace('.git', '') + f'/-/archive/{self.tag}/libicons-cache-{self.tag}.tar.gz'
-            sources_name = self.name + '-' + self.tag
+            archive_url = self.url.replace('.git', '') + f'/-/archive/{self.tag}/{self.alias.name}-{self.tag}.tar.gz'
+            sources_name = self.alias.name + '-' + self.tag
         else:
             raise Exception(f'Unknown repository type: {self.url}')
 
@@ -149,7 +151,8 @@ class Updater:
         if not found:
             GITERY.execute(f'init-db {self.name}')
             Popen(['git', 'clone', f'gitery:packages/{self.name}.git', gitery_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
-            shutil.rmtree(os.path.join(gitery_path, self.name))
+            if os.path.exists(os.path.join(gitery_path, self.name)):
+                shutil.rmtree(os.path.join(gitery_path, self.name))
             shutil.copytree(sources_dir, os.path.join(gitery_path, self.name))
             os.chdir(gitery_path)
             Popen(['git', 'add', '.'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
@@ -165,15 +168,15 @@ class Updater:
         if not os.path.exists(gear_path):
             os.mkdir(gear_path)
             with open(os.path.join(gear_path, 'rules'), 'w') as file:
-                file.write(f'spec: .gear/{self.name}.spec\n')
+                file.write(f'spec: .gear/{self.alias.name}.spec\n')
                 file.write(f'tar: {self.name}\n')
             
             Popen(['git', 'add', '.'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'commit', '-m', 'Add rules file'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'push'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
 
-        old_spec_path = os.path.join(gitery_path, '.gear', f'{self.name}.spec')
-        template_spec_path = os.path.join(wd, sources_dir, 'build-aux', 'sisyphus', f'{self.name}.spec')
+        old_spec_path = os.path.join(gitery_path, '.gear', f'{self.alias.name}.spec')
+        template_spec_path = os.path.join(wd, sources_dir, 'build-aux', 'sisyphus', f'{self.alias.name}.spec')
 
         if not os.path.exists(template_spec_path):
             raise Exception(f'No template spec file in \'{self.name}\' {self.tag}')
@@ -187,24 +190,25 @@ class Updater:
             Popen(['git', 'add', old_spec_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'commit', '-m', 'Add spec file'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'push'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+            Popen(['git', 'tag', '-a', '-s', '-m', f'{self.name} {self.version}-alt1', f'{self.version}-alt1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
         else:
             Popen(['add_changelog', old_spec_path, '-e', f'- New version: {self.version}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'add', '.'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['gear-commit', '--no-edit'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'push'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+            Popen(['gear-create-tag'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
 
-        Popen(['gear-create-tag'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
         Popen(['git', 'push', '--tags'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
 
         task_id = self.root_task if self.root_task is not None else GYLE.execute('task new')[0]
 
-        for dep in self.aliases.get(self.name).dependencies:
+        for dep in self.alias.dependencies:
             Updater(dep, None, task_id).update()
             
         GYLE.execute(f'task add {task_id} repo {self.name} {self.version}-alt1')
         
         if self.root_task is None:
-            GYLE.execute(f'task run {task_id}')
+            GYLE.execute(f'task run {task_id} --commit')
             print (f'Done: \'{self.name}\' with task id: {task_id}')
         else:
             print (f'Done: \'{self.name}\'')

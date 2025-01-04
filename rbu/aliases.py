@@ -26,6 +26,8 @@ from rbu.utils import Constants
 
 
 class Alias:
+    name:str
+    api_version:str|None
     url:str
     dependencies:list[str]
 
@@ -41,11 +43,17 @@ class Aliases:
                 for name, alias_data in d.items():
                     alias = Alias()
 
+                    if 'name' not in alias_data:
+                        raise ValueError(f'Alias {name} has no name')
                     if 'url' not in alias_data:
                         raise ValueError(f'Alias {name} has no url')
+                    if 'api-version' not in alias_data:
+                        alias_data['api-version'] = None
                     if 'dependencies' not in alias_data:
                         alias_data['dependencies'] = []
 
+                    alias.name = alias_data['name']
+                    alias.api_version = alias_data['api-version']
                     alias.url = alias_data['url']
                     alias.dependencies = alias_data['dependencies']
                     self._data[name] = alias
@@ -64,7 +72,7 @@ class Aliases:
 
         goods:list[re.Match] = []
         for pname in self._data.keys():
-            match = re.match(f'{name}([-\d]+)$', pname)
+            match = re.match(f'{name}([-\d.]+)$', pname)
             if match is not None:
                 goods.append(match)
 

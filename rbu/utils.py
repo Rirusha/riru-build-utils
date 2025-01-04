@@ -79,4 +79,5 @@ def update_spec (true_spec_path:str, template_spec_path:str, version:str):
 
             file.write('\n')
 
+        file.write('\n')
         file.writelines(changelog)
