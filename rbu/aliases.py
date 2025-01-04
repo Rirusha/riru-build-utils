@@ -18,6 +18,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 '''
 
 
+import re
 import yaml
 import os
 
@@ -39,16 +40,16 @@ class Aliases:
             for d in yaml.safe_load(file):
                 for name, alias_data in d.items():
                     alias = Alias()
-                    
+
                     if 'url' not in alias_data:
                         raise ValueError(f'Alias {name} has no url')
                     if 'dependencies' not in alias_data:
                         alias_data['dependencies'] = []
-                    
+
                     alias.url = alias_data['url']
                     alias.dependencies = alias_data['dependencies']
                     self._data[name] = alias
-                    
+
     def find_by_url(self, url:str) -> str|None:
         for name, alias in self._data.items():
             if alias.url == url:
@@ -56,4 +57,19 @@ class Aliases:
         return None
 
     def get(self, name:str) -> Alias|None:
-        return self._data.get(name)
+        ans = self._data.get(name)
+
+        if ans is not None:
+            return ans
+
+        goods:list[re.Match] = []
+        for pname in self._data.keys():
+            match = re.match(f'{name}([-\d]+)$', pname)
+            if match is not None:
+                goods.append(match)
+
+        if len(goods) == 0:
+            return None
+
+        goods.sort(key=lambda x: int(x.group(1).strip('-')), reverse=True)
+        return self._data[goods[0].string]

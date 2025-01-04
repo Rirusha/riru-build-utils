@@ -1,14 +1,14 @@
 - cassette:
     url: https://gitlab.gnome.org/Rirusha/Cassette.git
     dependencies:
-      - libtape-0
+      - libtape-0.2
 
-- libtape-0:
+- libtape-0.2:
     url: https://gitlab.gnome.org/Rirusha/libtape.git
     dependencies:
-      - libyandex-music-api-0
+      - libyandex-music-api-0.2
 
-- libyandex-music-api-0:
+- libyandex-music-api-0.2:
     url: https://gitlab.gnome.org/Rirusha/yandex-music-api-vala.git
     dependencies:
       - libapi-base-1
