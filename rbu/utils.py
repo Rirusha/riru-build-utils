@@ -44,3 +44,37 @@ def get_package_repo_version(name:str) -> str|None:
         return None
 
     return resp.json()['packages'][0]['version']
+
+def update_spec (true_spec_path:str, template_spec_path:str, version:str):
+    changelog = ['%changelog\n']
+    template_spec = []
+    
+    with open(true_spec_path, 'r') as file:
+        is_changelog = False
+        
+        for line in file.readlines():
+            if line.startswith('%changelog'):
+                is_changelog = True
+            else:
+                if is_changelog:
+                    changelog.append(line);
+        
+    with open(template_spec_path, 'r') as file:
+        for line in file.readlines():
+            if line.startswith('%changelog'):
+                break
+            
+            template_spec.append(line.strip())
+        
+    with open(true_spec_path, 'w') as file:
+        for line in template_spec:
+            if line.startswith('Version:') and '@LAST@' in line:
+                file.write(line.replace('@LAST@', version))
+            elif line.startswith('Release:'):
+                file.write('Release: alt1')
+            else:
+                file.write(line)
+
+            file.write('\n')
+
+        file.writelines(changelog)

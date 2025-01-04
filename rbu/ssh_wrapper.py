@@ -31,7 +31,7 @@ class SshWrapper():
         self._ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         
     def execute (self, command):
-        print (f'EXEC:\n\t{self.host} {command}')
+        print (f'EXEC:\n\t{self.host.split('.')[0]} {command}')
         self._ssh.connect(
             self.host,
             username=self.username,
@@ -40,6 +40,7 @@ class SshWrapper():
         )
         stdin, stdout, stderr = self._ssh.exec_command(command)
         out = stdout.read().decode().split('\n')
-        print (f'RETURN:\n\t{'\n\t'.join(out)}')
+        if out:
+            print (f'RETURN:\n\t{'\n\t'.join(out)}')
         self._ssh.close ()
         return out
