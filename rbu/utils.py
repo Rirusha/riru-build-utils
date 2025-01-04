@@ -18,6 +18,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 '''
 
 
+import os
 import requests
 from rbu.ssh_wrapper import SshWrapper
 
@@ -44,6 +45,11 @@ def get_package_repo_version(name:str) -> str|None:
         return None
 
     return resp.json()['packages'][0]['version']
+
+def create_rules(name:str, path:str):
+    with open(os.path.join(path, 'rules'), 'w') as file:
+        file.write(f'spec: .gear/{name}.spec\n')
+        file.write(f'tar: {name}\n')
 
 def update_spec (true_spec_path:str, template_spec_path:str, version:str):
     changelog = ['%changelog\n']

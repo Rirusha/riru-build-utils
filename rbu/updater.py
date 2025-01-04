@@ -27,7 +27,7 @@ import os
 
 import requests
 from rbu.aliases import Aliases
-from rbu.utils import GITERY, GYLE, ask, get_package_repo_version, update_spec
+from rbu.utils import GITERY, GYLE, ask, create_rules, get_package_repo_version, update_spec
 
 
 class Updater:
@@ -153,7 +153,7 @@ class Updater:
             shutil.copytree(sources_dir, os.path.join(gitery_path, self.name))
             os.chdir(gitery_path)
             Popen(['git', 'add', '.'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
-            Popen(['git', 'commit', '-m', '"Add upstream sources"'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+            Popen(['git', 'commit', '-m', 'Add upstream sources'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'push'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
         else:
             Popen(['git', 'clone', f'gitery:packages/{self.name}.git', gitery_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
@@ -164,11 +164,9 @@ class Updater:
         gear_path = os.path.join(gitery_path, '.gear')
         if not os.path.exists(gear_path):
             os.mkdir(gear_path)
-            with open(os.path.join(gear_path, 'rules'), 'w') as file:
-                file.write(f'spec: .gear/{self.name}.spec\n')
-                file.write(f'tar: {self.name}\n')
+            create_rules(self.name, gear_path)
             Popen(['git', 'add', '.'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
-            Popen(['git', 'commit', '-m', '"Add rules file"'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+            Popen(['git', 'commit', '-m', 'Add rules file'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'push'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
 
         old_spec_path = os.path.join(gitery_path, '.gear', f'{self.name}.spec')
@@ -184,7 +182,7 @@ class Updater:
         if spec_file_created:
             Popen(['add_changelog', old_spec_path, '-e', f'- Initial build for sisyphus'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'add', old_spec_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
-            Popen(['git', 'commit', '-m', '"Add spec file"'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+            Popen(['git', 'commit', '-m', 'Add spec file'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'push'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
         else:
             Popen(['add_changelog', old_spec_path, '-e', f'- New version: {self.version}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()

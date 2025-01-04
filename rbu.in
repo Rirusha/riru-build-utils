@@ -90,11 +90,19 @@ def update (argv:list[str]):
     Updater(name, tag, task_root).update()
 
 def test (argv:list[str]):
+    working_dir:str|None = None
+
     if len(argv) > 0:
-        print ('Too many args.')
+        working_dir = argv.pop(0)
+
+        if len(argv) > 0:
+            print ('Too many args.')
+            return
+    else:
+        print (f"Not enough args.")
         return
 
-    Tester().test()
+    Tester(working_dir).test()
 
 
 if __name__ == '__main__':
