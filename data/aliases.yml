@@ -1,44 +1,44 @@
 - cassette:
     url: https://gitlab.gnome.org/Rirusha/Cassette.git
     dependencies:
-      - libtape
+      - libtape-0
 
-- libtape:
+- libtape-0:
     url: https://gitlab.gnome.org/Rirusha/libtape.git
     dependencies:
-      - libyandex-music-api
+      - libyandex-music-api-0
 
-- libyandex-music-api:
+- libyandex-music-api-0:
     url: https://gitlab.gnome.org/Rirusha/yandex-music-api-vala.git
     dependencies:
-      - libapi-base
+      - libapi-base-1
 
-- libapi-base:
+- libapi-base-1:
     url: https://gitlab.gnome.org/Rirusha/api-base.git
 
-- libicons-cache:
+- libicons-cache-1:
     url: https://gitlab.gnome.org/Rirusha/libicons-cache.git
 
 - apa:
     url: https://github.com/alt-gnome/apa.git
     dependencies:
-      - libalt-repo
-      - libvazzy
+      - libalt-repo-1
+      - libvazzy-1
 
-- libalt-repo:
+- libalt-repo-1:
     url: https://github.com/alt-gnome/libalt-repo-vala.git
     dependencies:
-      - libapi-base
+      - libapi-base-1
 
-- libvazzy:
+- libvazzy-1:
     url: https://github.com/Rirusha/libvazzy.git
 
 - foldy:
     url: https://github.com/alt-gnome/Foldy.git
     dependencies:
-      - libfoldy
+      - libfoldy-1
 
-- libfoldy:
+- libfoldy-1:
     url: https://github.com/alt-gnome/libfoldy.git
 
 - ready-set:
@@ -56,7 +56,7 @@
 - riru-build-utils:
     url: https://github.com/Rirusha/riru-build-utils.git
 
-- libvalagram:
+- libvalagram-1:
     url: https://github.com/Rirusha/libvalagram.git
 
 - prophecy:
