@@ -46,24 +46,20 @@ def get_package_repo_version(name:str) -> str|None:
 
     return resp.json()['packages'][0]['version']
 
-def create_rules(name:str, path:str):
-    with open(os.path.join(path, 'rules'), 'w') as file:
-        file.write(f'spec: .gear/{name}.spec\n')
-        file.write(f'tar: {name}\n')
-
 def update_spec (true_spec_path:str, template_spec_path:str, version:str):
     changelog = ['%changelog\n']
     template_spec = []
     
-    with open(true_spec_path, 'r') as file:
-        is_changelog = False
-        
-        for line in file.readlines():
-            if line.startswith('%changelog'):
-                is_changelog = True
-            else:
-                if is_changelog:
-                    changelog.append(line);
+    if os.path.exists(true_spec_path):
+        with open(true_spec_path, 'r') as file:
+            is_changelog = False
+            
+            for line in file.readlines():
+                if line.startswith('%changelog'):
+                    is_changelog = True
+                else:
+                    if is_changelog:
+                        changelog.append(line);
         
     with open(template_spec_path, 'r') as file:
         for line in file.readlines():

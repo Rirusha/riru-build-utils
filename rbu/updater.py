@@ -27,7 +27,7 @@ import os
 
 import requests
 from rbu.aliases import Aliases
-from rbu.utils import GITERY, GYLE, ask, create_rules, get_package_repo_version, update_spec
+from rbu.utils import GITERY, GYLE, ask, get_package_repo_version, update_spec
 
 
 class Updater:
@@ -164,7 +164,10 @@ class Updater:
         gear_path = os.path.join(gitery_path, '.gear')
         if not os.path.exists(gear_path):
             os.mkdir(gear_path)
-            create_rules(self.name, gear_path)
+            with open(os.path.join(gear_path, 'rules'), 'w') as file:
+                file.write(f'spec: .gear/{self.name}.spec\n')
+                file.write(f'tar: {self.name}\n')
+            
             Popen(['git', 'add', '.'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'commit', '-m', 'Add rules file'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'push'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()

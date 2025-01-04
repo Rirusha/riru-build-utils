@@ -20,28 +20,26 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 import os
 import shutil
+from subprocess import Popen
+import subprocess
 import tempfile
 
 from rbu.aliases import Aliases
-from rbu.utils import create_rules
+from rbu.utils import update_spec
 
 
 class Tester:
-    
+
     working_dir:str|None
     aliases:Aliases
-    
+
     def __init__(self, working_dir:str|None=None):        
         self.aliases = Aliases()
 
         self.working_dir = working_dir if working_dir is not None else os.curdir
-        
-    def test(self, lazy:bool=False):
-        test_dir = os.path.join(tempfile.gettempdir(), 'riru-build-utils', 'test')
-        os.makedirs(test_dir, exist_ok=True)
 
-        if os.path.exists(test_dir):
-            shutil.rmtree(test_dir)
+    def test(self, cleanup:bool=True):
+        os.chdir(self.working_dir)
 
         sisyphus_spec_dir = os.path.join(self.working_dir, 'build-aux', 'sisyphus')
         if not os.path.exists(sisyphus_spec_dir):
@@ -50,17 +48,44 @@ class Tester:
         sisyphus_spec_dir_ls = os.listdir(sisyphus_spec_dir)
         if len(sisyphus_spec_dir_ls) != 1:
             raise Exception(f'No template spec file or too many files in spec dir')
-        
+
         name = sisyphus_spec_dir_ls[0].replace('.spec', '')
-        
+
+        test_dir = os.path.join(tempfile.gettempdir(), 'riru-build-utils', 'test', name)
+        os.makedirs(test_dir, exist_ok=True)
+
+        if os.path.exists(test_dir):
+            shutil.rmtree(test_dir)
+
+        shutil.copytree(self.working_dir, test_dir, ignore=shutil.ignore_patterns('_build'))
+
         if self.aliases.get(name) is None:
             raise Exception(f'Alias \'{name}\' not found')
-        
-        old_spec_path = os.path.join(test_dir, '.gear', f'{name}.spec')
-        template_spec_path = os.path.join(sisyphus_spec_dir, f'{name}.spec')
 
         gear_path = os.path.join(test_dir, '.gear')
-        os.mkdir(gear_path)
-        create_rules(self.name, gear_path)
+        os.makedirs(gear_path)
+        with open(os.path.join(gear_path, 'rules'), 'w') as file:
+            file.write(f'spec: .gear/{name}.spec\n')
+            file.write(f'tar: .\n')
+
+        spec_path = os.path.join(gear_path, f'{name}.spec')
+        template_spec_path = os.path.join(sisyphus_spec_dir, f'{name}.spec')
+
+        update_spec(spec_path, template_spec_path, '0.0.0')
+        Popen(['add_changelog', spec_path, '-e', f'- Test build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
         
-        shutil.copytree(self.working_dir, )
+        if cleanup:
+            Popen(['hsh', '--cleanup-only'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+
+        for dep in self.aliases.get(name).dependencies:
+            dep_dir = os.path.join(tempfile.gettempdir(), 'riru-build-utils', 'test', name + dep)
+            os.chdir()
+            url = self.aliases.get(dep).url
+            if not os.path.exists(dep_dir):
+                shutil.rmtree(dep_dir)
+            Popen(['git', 'clone', url, dep_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+            Tester(dep_dir).test(False)
+
+        os.chdir(test_dir)
+        Popen(['git', 'add', '.'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+        Popen(['gear-hsh', '-v', '--commit', '--no-sisyphus-check=gpg,packager', '--lazy-cleanup']).wait()

@@ -98,9 +98,6 @@ def test (argv:list[str]):
         if len(argv) > 0:
             print ('Too many args.')
             return
-    else:
-        print (f"Not enough args.")
-        return
 
     Tester(working_dir).test()
 
