@@ -1,7 +1,6 @@
 %define _unpackaged_files_terminate_build 1
 
 %define shortname rbu
-%define glib2_ver 2.74
 
 Name: riru-build-utils
 Version: @LAST@

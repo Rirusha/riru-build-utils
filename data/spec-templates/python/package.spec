@@ -9,11 +9,12 @@ License: GPL-3.0-or-later
 Group: ASSERT
 Url: ASSERT
 Vcs: ASSERT.git
+BuildArch: noarch
 
-Source: %name-%version.tar
+Source0: %name-%version.tar
 
-BuildRequires(pre): 
-BuildRequires: 
+BuildRequires(pre): rpm-macros-meson rpm-build-python3
+BuildRequires: meson
 
 %description
 %summary.
@@ -33,5 +34,4 @@ BuildRequires:
 
 %files
 %_bindir/%name
-%_user_unitdir/%name.service
-%doc README.md
+%python3_sitelibdir_noarch/%name/

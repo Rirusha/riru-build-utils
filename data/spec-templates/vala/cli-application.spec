@@ -12,8 +12,9 @@ Vcs: ASSERT.git
 
 Source0: %name-%version.tar
 
-BuildRequires(pre): 
-BuildRequires: 
+BuildRequires(pre): rpm-macros-meson
+BuildRequires: meson
+BuildRequires: vala
 
 %description
 %summary.

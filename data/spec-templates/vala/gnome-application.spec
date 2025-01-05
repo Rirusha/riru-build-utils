@@ -13,8 +13,11 @@ Vcs: ASSERT.git
 
 Source0: %name-%version.tar
 
-BuildRequires(pre): 
-BuildRequires: 
+BuildRequires(pre): rpm-macros-meson
+BuildRequires: meson
+BuildRequires: vala
+BuildRequires: pkgconfig(libadwaita-1)
+BuildRequires: blueprint-compiler
 %{?_enable_check:BuildRequires: /usr/bin/appstreamcli desktop-file-utils}
 
 %description
