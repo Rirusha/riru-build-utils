@@ -1,0 +1,42 @@
+%define _unpackaged_files_terminate_build 1
+
+%define shortname rbu
+%define glib2_ver 2.74
+
+Name: riru-build-utils
+Version: @LAST@
+Release: alt1
+
+Summary: Build utilities for Average Rirusha Project
+License: GPL-3.0-or-later
+Group: Development/Tools
+Url: https://github.com/Rirusha/riru-build-utils
+Vcs: https://github.com/Rirusha/riru-build-utils.git
+
+Source0: %name-%version.tar
+
+BuildRequires(pre): rpm-macros-meson rpm-build-python3
+BuildRequires: meson
+BuildRequires: python3-module-paramiko
+
+%description
+%summary.
+Contains update, test and create commands.
+
+%prep
+%setup
+
+%build
+%meson
+%meson_build
+
+%install
+%meson_install
+
+%check
+%meson_test
+
+%files
+%_bindir/%shortname
+%python3_sitelibdir_noarch/rbu/
+%_datadir/%name/aliases.yml
