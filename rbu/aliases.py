@@ -34,7 +34,7 @@ class Alias:
 
 class Aliases:
 
-    _data:dict[Alias]
+    _data:dict[str,Alias]
 
     def __init__(self):
         with open(os.path.join(Constants.PKGDATADIR, 'aliases.yml'), 'r') as file:
@@ -70,14 +70,13 @@ class Aliases:
         if ans is not None:
             return ans
 
-        goods:list[re.Match] = []
-        for pname in self._data.keys():
-            match = re.match(f'{name}([-\d.]+)$', pname)
-            if match is not None:
-                goods.append(match)
+        goods:list[Alias] = []
+        for al in self._data.values():
+            if name == al.name:
+                goods.append(al)
 
         if len(goods) == 0:
             return None
 
-        goods.sort(key=lambda x: int(x.group(1).strip('-')), reverse=True)
+        goods.sort(key=lambda x: float(x.api_version), reverse=True)
         return self._data[goods[0].string]
