@@ -37,9 +37,10 @@ class Updater:
     version:str|None
     tag:str|None
     root_task:str|None
+    test:bool
     alias:Alias
     
-    def __init__(self, name:str, tag:str|None, root_task:str|None):
+    def __init__(self, name:str, tag:str|None, root_task:str|None, test:bool):
         aliases = Aliases()
         
         nname = name
@@ -65,6 +66,7 @@ class Updater:
         self.name = name
         self.tag = tag
         self.root_task = root_task
+        self.test = test
 
     def update(self):
         root_tpm = os.path.join(tempfile.gettempdir(), 'riru-build-utils')
@@ -102,6 +104,7 @@ class Updater:
         print('Version: ' + self.version)
         print('Tag: ' + self.tag)
         print('HasRootTask: ' + ('true' if self.root_task is not None else 'false'))
+        print('Test: ' + ('true' if self.test else 'false'))
         print ()
         
         if not ask('All is chiky-pooky?'):
@@ -208,7 +211,7 @@ class Updater:
         GYLE.execute(f'task add {task_id} repo {self.name} {self.version}-alt1')
         
         if self.root_task is None:
-            GYLE.execute(f'task run {task_id} --commit')
+            GYLE.execute(f'task run {task_id}{' --commit' if not self.test else ''}')
             print (f'Done: \'{self.name}\' with task id: {task_id}')
         else:
             print (f'Done: \'{self.name}\'')

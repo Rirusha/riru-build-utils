@@ -70,6 +70,12 @@ def update (argv:list[str]):
     name:str = ""
     tag:str|None = None
     task_root:str|None = None
+    test:bool = False
+    
+    for arg in argv:
+        if arg == '--test':
+            test = True
+            argv.remove(arg)
 
     if len(argv) > 0:
         name = argv.pop(0)
@@ -87,7 +93,7 @@ def update (argv:list[str]):
         print (f"Not enough args.")
         return
 
-    Updater(name, tag, task_root).update()
+    Updater(name, tag, task_root, test).update()
 
 def test (argv:list[str]):
     working_dir:str|None = None
