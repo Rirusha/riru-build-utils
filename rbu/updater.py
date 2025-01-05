@@ -20,6 +20,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 import shutil
 import subprocess
+import sys
 import tarfile
 import tempfile
 from subprocess import Popen
@@ -207,9 +208,14 @@ class Updater:
 
         for dep in self.alias.dependencies:
             Updater(dep, None, task_id).update()
-            
-        GYLE.execute(f'task add {task_id} repo {self.name} {self.version}-alt1')
-        
+
+        try:
+            GYLE.execute(f'task add {task_id} repo {self.name} {self.version}-alt1')
+        except Exception as e:
+            print ('Somethig went wrong, abort task...')
+            GYLE.execute(f'task rm {task_id}')
+            sys.exit(1)
+
         if self.root_task is None:
             GYLE.execute(f'task run {task_id}{' --commit' if not self.test else ''}')
             print (f'Done: \'{self.name}\' with task id: {task_id}')

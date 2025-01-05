@@ -30,7 +30,7 @@ class SshWrapper():
         self.username = username
         self._ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         
-    def execute (self, command):
+    def execute (self, command) -> list[str]:
         print (f'EXEC:\n\t{self.host.split('.')[0]} {command}')
         self._ssh.connect(
             self.host,
@@ -39,6 +39,11 @@ class SshWrapper():
             allow_agent=True
         )
         stdin, stdout, stderr = self._ssh.exec_command(command)
+        
+        err = stderr.read().decode()
+        if err:
+            raise Exception (err)
+        
         out = stdout.read().decode().split('\n')
         if out:
             print (f'RETURN:\n\t{'\n\t'.join(out)}')
