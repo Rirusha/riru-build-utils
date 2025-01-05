@@ -28,7 +28,7 @@ import os
 
 import requests
 from rbu.aliases import Alias, Aliases
-from rbu.utils import GITERY, GYLE, ask, get_package_repo_version, update_spec
+from rbu.utils import GITERY, GYLE, ask, get_package_repo_version, print_on_no, update_spec
 
 
 class Updater:
@@ -109,7 +109,7 @@ class Updater:
         print ()
         
         if not ask('All is chiky-pooky?'):
-            print('>:(')
+            print_on_no()
             return
 
         os.chdir(wd)

@@ -19,6 +19,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 
 import os
+import random
 import requests
 from rbu.ssh_wrapper import SshWrapper
 
@@ -46,7 +47,7 @@ def get_package_repo_version(name:str) -> str|None:
 
     return resp.json()['packages'][0]['version']
 
-def update_spec (true_spec_path:str, template_spec_path:str, version:str):
+def update_spec(true_spec_path:str, template_spec_path:str, version:str):
     changelog = ['%changelog\n']
     template_spec = []
     
@@ -81,3 +82,10 @@ def update_spec (true_spec_path:str, template_spec_path:str, version:str):
 
         file.write('\n')
         file.writelines(changelog)
+
+def print_on_no():
+    print(random.choice([
+        '>:(',
+        'Ok...',
+        'nah, whatever...',
+    ]))

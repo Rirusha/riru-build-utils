@@ -30,7 +30,7 @@ from rbu.updater import Updater
 
 def print_help():
     print ('Usage:')
-    print ('\trbu create [<working dir>]')
+    print ('\trbu create <language> <project type>')
     print ('\trbu update <git url or alias name> [<tag>] [<task-id-root>] [--test]')
     print ('\trbu test [<working dir>]')
 
@@ -60,11 +60,24 @@ def main():
             return
 
 def create (argv:list[str]):
+    language:str = None
+    project_type:str = None
+    
     if len(argv) > 0:
-        print ('Too many args.')
+        language = argv.pop(0)
+
+        if len(argv) > 0:
+            project_type = argv.pop(0)
+
+            if len(argv) > 0:
+                print ('Too many args.')
+                return
+
+    if language is None or project_type is None:
+        print (f"Not enough args.")
         return
 
-    Creator().create()
+    Creator(language, project_type).create()
 
 def update (argv:list[str]):
     name:str = ""

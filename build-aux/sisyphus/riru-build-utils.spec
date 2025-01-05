@@ -39,4 +39,4 @@ Contains update, test and create commands.
 %files
 %_bindir/%shortname
 %python3_sitelibdir_noarch/rbu/
-%_datadir/%name/aliases.yml
+%_datadir/%name/
