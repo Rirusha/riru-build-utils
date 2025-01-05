@@ -30,9 +30,9 @@ from rbu.updater import Updater
 
 def print_help():
     print ('Usage:')
-    print ('\trbu create')
-    print ('\trbu update <git url or alias> <tag>? <task-id-root>?')
-    print ('\trbu test')
+    print ('\trbu create [<working dir>]')
+    print ('\trbu update <git url or alias name> [<tag>] [<task-id-root>] [--test]')
+    print ('\trbu test [<working dir>]')
 
 def main():    
     argv = sys.argv.copy()
