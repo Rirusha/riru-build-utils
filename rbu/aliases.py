@@ -78,5 +78,6 @@ class Aliases:
         if len(goods) == 0:
             return None
 
+        # float for pre-release api version (0.1)
         goods.sort(key=lambda x: float(x.api_version), reverse=True)
         return self._data[goods[0].string]
