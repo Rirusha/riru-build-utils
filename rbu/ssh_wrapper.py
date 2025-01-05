@@ -42,7 +42,7 @@ class SshWrapper():
         
         err = stderr.read().decode()
         if err:
-            raise Exception (err)
+            print(err)
         
         out = stdout.read().decode().split('\n')
         if out:
