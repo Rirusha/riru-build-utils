@@ -58,7 +58,7 @@ class Updater:
             if name is None:
                 raise Exception(f'Alias for \'{nname}\' not found')
             
-        self.alias = aliases.get(name)
+        name, self.alias = aliases.get(name)
             
         if self.alias is None:
             raise Exception(f'Alias \'{name}\' not found')
@@ -167,12 +167,12 @@ class Updater:
             shutil.rmtree(os.path.join(gitery_path, self.name))
             shutil.copytree(sources_dir, os.path.join(gitery_path, self.name))
             os.chdir(gitery_path)
-            
+
         gear_path = os.path.join(gitery_path, '.gear')
         if not os.path.exists(gear_path):
             os.mkdir(gear_path)
             with open(os.path.join(gear_path, 'rules'), 'w') as file:
-                file.write(f'spec: .gear/{self.alias.name}.spec\n')
+                file.write(f'spec: .gear/{self.name}.spec\n')
                 file.write(f'tar: {self.name}\n')
             
             Popen(['git', 'add', '.'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()

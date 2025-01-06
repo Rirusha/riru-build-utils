@@ -64,11 +64,11 @@ class Aliases:
                 return name
         return None
 
-    def get(self, name:str) -> Alias|None:
+    def get(self, name:str) -> tuple|None:
         ans = self._data.get(name)
 
         if ans is not None:
-            return ans
+            return (name, ans)
 
         goods:list[Alias] = []
         for al in self._data.values():
@@ -80,4 +80,9 @@ class Aliases:
 
         # float for pre-release api version (0.1)
         goods.sort(key=lambda x: float(x.api_version), reverse=True)
-        return goods[0]
+        
+        true_name = f'{goods[0].name}' + (f'-{goods[0].api_version}' if goods[0].api_version is not None else '')
+        
+        print(true_name)
+        
+        return (true_name, goods[0])

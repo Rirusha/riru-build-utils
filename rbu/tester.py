@@ -77,10 +77,10 @@ class Tester:
         if cleanup:
             Popen(['hsh', '--cleanup-only'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
 
-        for dep in self.aliases.get(name).dependencies:
+        for dep in self.aliases.get(name)[1].dependencies:
             dep_dir = os.path.join(tempfile.gettempdir(), 'riru-build-utils', 'test', name + dep)
             os.chdir()
-            url = self.aliases.get(dep).url
+            url = self.aliases.get(dep)[1].url
             if not os.path.exists(dep_dir):
                 shutil.rmtree(dep_dir)
             Popen(['git', 'clone', url, dep_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
