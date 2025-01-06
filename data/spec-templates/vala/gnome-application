@@ -1,12 +1,12 @@
 %define _unpackaged_files_terminate_build 1
 %define app_id ASSERT
 
-Name: ASSERT
-Version: ASSERT
+Name: @NAME@
+Version: @VERSION@
 Release: alt1
 
 Summary: ASSERT
-License: GPL-3.0-or-later
+License: @LICENSE@
 Group: ASSERT
 Url: ASSERT
 Vcs: ASSERT.git
@@ -17,6 +17,7 @@ BuildRequires(pre): rpm-macros-meson
 BuildRequires: meson
 BuildRequires: vala
 BuildRequires: pkgconfig(libadwaita-1)
+@DEPENDENCIES@
 BuildRequires: blueprint-compiler
 %{?_enable_check:BuildRequires: /usr/bin/appstreamcli desktop-file-utils}
 

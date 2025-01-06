@@ -1,11 +1,11 @@
 %define _unpackaged_files_terminate_build 1
 
-Name: ASSERT
-Version: ASSERT
+Name: @NAME@
+Version: @VERSION@
 Release: alt1
 
 Summary: ASSERT
-License: GPL-3.0-or-later
+License: @LICENSE@
 Group: ASSERT
 Url: ASSERT
 Vcs: ASSERT.git
@@ -15,6 +15,7 @@ Source0: %name-%version.tar
 
 BuildRequires(pre): rpm-macros-meson rpm-build-python3
 BuildRequires: meson
+@DEPENDENCIES@
 
 %description
 %summary.

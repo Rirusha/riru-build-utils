@@ -20,40 +20,35 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 import os
 import shutil
-from rbu.utils import Constants, ask, print_on_no
+from rbu.utils import Constants, ask, create_spec, print_on_no
 
 
 class Creator:
 
     language:str
     project_type:str
-    
-    def __init__(self, language:str, project_type:str):
+    working_dir:str
+
+    def __init__(self, language:str, project_type:str, working_dir:str=os.path.curdir):
         self.language = language
         self.project_type = project_type
-        
+        self.working_dir = working_dir
+
     def create(self):
+        os.chdir(self.working_dir)
+
         templates_dir = os.path.join(Constants.PKGDATADIR, 'spec-templates')
-        
+
         if self.language not in os.listdir(templates_dir):
             raise ValueError(f'Language \'{self.language}\' not supported. Supported languages: {', '.join(os.listdir(templates_dir))}')
-        
+
         language_dir = os.path.join(templates_dir, self.language)
 
         if self.project_type not in os.listdir(language_dir):
             raise ValueError(f'Project type \'{self.project_type}\' not supported. Supported types: {', '.join(os.listdir(language_dir))}')
-        
+
         spec_path = os.path.join(language_dir, self.project_type)
-        create_spec_path = os.path.join(os.path.curdir, 'build-aux', 'sisyphus', 'template.spec')
-        
-        if os.path.exists(create_spec_path):
-            print('Spec file \'{create_spec_path}\' already exists.')
-            if not ask('Overwrite?'):
-                print_on_no()
-                return
 
-            shutil.rmtree(create_spec_path)
-
-        shutil.copy(spec_path, create_spec_path)
+        create_spec(spec_path)
 
         print('Done')

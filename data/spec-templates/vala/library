@@ -1,24 +1,25 @@
 %define _unpackaged_files_terminate_build 1
 
-%define api_version ASSERT
-%define minor_version ASSERT
+%define api_version @API_VERSION@
+%define minor_version @MINOR_VERSION@
 %define gir_name ASSERT-%api_version
 
-Name: ASSERT-%api_version
-Version: %api_version-%minor_version
+Name: @NAME@-%api_version
+Version: %api_version.%minor_version
 Release: alt1
 
 Summary: ASSERT
-License: GPL-3.0-or-later
+License: @LICENSE@
 Group: ASSERT
 Url: ASSERT
 Vcs: ASSERT.git
 
 Source0: %name-%version.tar
 
-BuildRequires (pre): rpm-macros-meson rpm-build-vala rpm-build-gir
+BuildRequires(pre): rpm-macros-meson rpm-build-vala rpm-build-gir
 BuildRequires: meson
 BuildRequires: vala
+@DEPENDENCIES@
 
 %description
 %summary.
