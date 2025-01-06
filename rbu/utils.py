@@ -76,6 +76,10 @@ def update_spec(true_spec_path:str, template_spec_path:str, version:str):
         for line in template_spec:
             if line.startswith('Version:') and '@LAST@' in line:
                 file.write(line.replace('@LAST@', version))
+            elif line.startswith('%define api_version') and '@LAST_API_VERSION@' in line:
+                file.write(line.replace('@LAST_API_VERSION@', cut_version(version)[0]))
+            elif line.startswith('%define minor_version') and '@LAST_MINOR_VERSION@' in line:
+                file.write(line.replace('@LAST_MINOR_VERSION@', cut_version(version)[1]))
             elif line.startswith('Release:'):
                 file.write('Release: alt1')
             else:
@@ -96,39 +100,13 @@ def print_on_no():
 def create_spec(orig_spec_path:str):
     if not os.path.exists('_build'):
         Popen(['meson', 'setup', '_build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
-    
+
     project_info_json = Popen(['meson', 'introspect', '--projectinfo', '_build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).communicate()[0]
-    
+
     project_info = json.loads(project_info_json)
-    version = project_info.get('version', '')
     name = project_info.get('descriptive_name', '')
     license_ = project_info.get('license', ['GPL-3.0-or-later'])[0]
     dependencies = []
-    
-    api_version = ''
-    minor_version = ''
-    
-    version_parts = version.split('.')
-    if len(version_parts) == 1:
-        raise ValueError('Version must be in the format 0.x.y or x.y')
-    elif len(version_parts) == 2:
-        if version_parts[0] == '0':
-            raise ValueError('Version must be in the format 0.x.y or x.y or x.y.z')
-
-        api_version = version_parts[0]
-        minor_version = version_parts[1]
-    elif len(version_parts) == 3:
-        if version_parts[0] == '0':
-            api_version = version_parts[0] + '.' + version_parts[1]
-            minor_version = version_parts[2]
-        else:
-            api_version = version_parts[0]
-            minor_version = version_parts[1] + '.' + version_parts[2]
-    else:
-        raise ValueError('Version must be in the format 0.x.y or x.y or x.y.z')
-    
-    if api_version == '' or minor_version == '':
-        raise ValueError(f'Strange version \'{version}\'')
 
     meson_path = os.path.join(os.path.curdir, 'meson.build')
     with open(meson_path, 'r') as file:
@@ -139,7 +117,6 @@ def create_spec(orig_spec_path:str):
     print ()
     print('Data:')
     print('Name: ' + name)
-    print('Version: ' + version)
     print('License: ' + license_)
     print('Dependencies: ' + ('-' if len(dependencies) == 0 else ', '.join(dependencies)))
     print ()
@@ -162,4 +139,32 @@ def create_spec(orig_spec_path:str):
         with open(new_spec_path, 'w') as new_file:
             for line in file.readlines():
                 # Stupid is my second name
-                new_file.write(line.replace('@NAME@', name).replace('@API_VERSION@', api_version).replace('@MINOR_VERSION@', minor_version).replace('@VERSION@', '@LAST@').replace('@LICENSE@', license_).replace('@DEPENDENCIES@', '\n'.join(map(lambda x: f'BuildRequires: pkgconfig({x})', dependencies))))
+                new_file.write(line.replace('@NAME@', name).replace('@LICENSE@', license_).replace('@DEPENDENCIES@', '\n'.join(map(lambda x: f'BuildRequires: pkgconfig({x})', dependencies))))
+
+def cut_version(version:str) -> tuple[str]:
+    api_version = ''
+    minor_version = ''
+
+    version_parts = version.split('.')
+    if len(version_parts) == 1:
+        raise ValueError('Version must be in the format 0.x.y or x.y')
+    elif len(version_parts) == 2:
+        if version_parts[0] == '0':
+            raise ValueError('Version must be in the format 0.x.y or x.y or x.y.z')
+
+        api_version = version_parts[0]
+        minor_version = version_parts[1]
+    elif len(version_parts) == 3:
+        if version_parts[0] == '0':
+            api_version = version_parts[0] + '.' + version_parts[1]
+            minor_version = version_parts[2]
+        else:
+            api_version = version_parts[0]
+            minor_version = version_parts[1] + '.' + version_parts[2]
+    else:
+        raise ValueError('Version must be in the format 0.x.y or x.y or x.y.z')
+
+    if api_version == '' or minor_version == '':
+        raise ValueError(f'Strange version \'{version}\'')
+    
+    return (api_version, minor_version)

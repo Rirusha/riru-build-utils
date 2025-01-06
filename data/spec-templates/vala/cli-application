@@ -1,7 +1,7 @@
 %define _unpackaged_files_terminate_build 1
 
 Name: @NAME@
-Version: @VERSION@
+Version: @LAST@
 Release: alt1
 
 Summary: ASSERT

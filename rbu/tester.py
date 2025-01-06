@@ -33,10 +33,10 @@ class Tester:
     working_dir:str|None
     aliases:Aliases
 
-    def __init__(self, working_dir:str=os.curdir):        
+    def __init__(self, working_dir:str|None=None):        
         self.aliases = Aliases()
 
-        self.working_dir = working_dir
+        self.working_dir = working_dir if working_dir is not None else os.curdir
 
     def test(self, cleanup:bool=True):
         os.chdir(self.working_dir)

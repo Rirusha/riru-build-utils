@@ -29,10 +29,10 @@ class Creator:
     project_type:str
     working_dir:str
 
-    def __init__(self, language:str, project_type:str, working_dir:str=os.path.curdir):
+    def __init__(self, language:str, project_type:str, working_dir:str|None=None):
         self.language = language
         self.project_type = project_type
-        self.working_dir = working_dir
+        self.working_dir = working_dir if working_dir is not None else os.curdir
 
     def create(self):
         os.chdir(self.working_dir)

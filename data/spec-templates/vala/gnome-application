@@ -2,7 +2,7 @@
 %define app_id ASSERT
 
 Name: @NAME@
-Version: @VERSION@
+Version: @LAST@
 Release: alt1
 
 Summary: ASSERT

@@ -1,7 +1,7 @@
 %define _unpackaged_files_terminate_build 1
 
-%define api_version @API_VERSION@
-%define minor_version @MINOR_VERSION@
+%define api_version @LAST_API_VERSION@
+%define minor_version @LAST_MINOR_VERSION@
 %define gir_name ASSERT-%api_version
 
 Name: @NAME@-%api_version

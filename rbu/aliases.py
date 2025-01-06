@@ -80,4 +80,4 @@ class Aliases:
 
         # float for pre-release api version (0.1)
         goods.sort(key=lambda x: float(x.api_version), reverse=True)
-        return self._data[goods[0].string]
+        return goods[0]
