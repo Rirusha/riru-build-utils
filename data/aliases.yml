@@ -21,7 +21,7 @@
 - libapi-base-1:
     name: libapi-base
     api-version: 1
-    url: https://gitlab.gnome.org/Rirusha/api-base.git
+    url: https://gitlab.gnome.org/Rirusha/libapi-base.git
 
 - libicons-cache-1:
     name: libicons-cache
