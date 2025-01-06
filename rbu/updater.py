@@ -179,7 +179,7 @@ class Updater:
             Popen(['git', 'commit', '-m', 'Add rules file'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'push'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
 
-        old_spec_path = os.path.join(gitery_path, '.gear', f'{self.alias.name}.spec')
+        old_spec_path = os.path.join(gitery_path, '.gear', f'{self.name}.spec')
         template_spec_path = os.path.join(wd, sources_dir, 'build-aux', 'sisyphus', f'{self.alias.name}.spec')
 
         if not os.path.exists(template_spec_path):
