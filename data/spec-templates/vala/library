@@ -20,6 +20,7 @@ BuildRequires(pre): rpm-macros-meson rpm-build-vala rpm-build-gir
 BuildRequires: meson
 BuildRequires: vala
 @DEPENDENCIES@
+BuildRequires: gobject-introspection-devel
 
 %description
 %summary.
