@@ -18,6 +18,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 '''
 
 
+import json
 import os
 import shutil
 from subprocess import Popen
@@ -70,8 +71,11 @@ class Tester:
 
         spec_path = os.path.join(gear_path, f'{name}.spec')
         template_spec_path = os.path.join(sisyphus_spec_dir, f'{name}.spec')
+        
+        project_info = json.loads(Popen(['meson', 'introspect', '--projectinfo', '_build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).communicate()[0])
+        version = project_info.get('version')
 
-        update_spec(spec_path, template_spec_path, '0.0.0')
+        update_spec(spec_path, template_spec_path, version)
         Popen(['add_changelog', spec_path, '-e', f'- Test build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
         
         if cleanup:
