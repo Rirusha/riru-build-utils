@@ -90,3 +90,7 @@
 - inventor:
     name: inventor
     url: https://github.com/alt-gnome/Inventor.git
+
+- passwd-gui:
+    name: passwd-gui
+    url: https://github.com/Rirusha/passwd-gui.git
