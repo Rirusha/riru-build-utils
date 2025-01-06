@@ -83,6 +83,4 @@ class Aliases:
         
         true_name = f'{goods[0].name}' + (f'-{goods[0].api_version}' if goods[0].api_version is not None else '')
         
-        print(true_name)
-        
         return (true_name, goods[0])

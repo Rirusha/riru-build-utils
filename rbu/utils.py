@@ -124,8 +124,12 @@ def create_spec(orig_spec_path:str):
     if not ask('All is chiky-pooky?'):
         print_on_no()
         return
+    
+    spec_dir_path = os.path.join(os.path.curdir, 'build-aux', 'sisyphus')
+    if not os.path.exists(spec_dir_path):
+        os.makedirs(spec_dir_path)
 
-    new_spec_path = os.path.join(os.path.curdir, 'build-aux', 'sisyphus', f'{name}.spec')
+    new_spec_path = os.path.join(spec_dir_path, f'{name}.spec')
     
     if os.path.exists(new_spec_path):
         print(f'Spec file \'{new_spec_path}\' already exists.')
