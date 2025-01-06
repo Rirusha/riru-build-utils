@@ -1,6 +1,6 @@
 project('riru-build-utils',
     version: '0.4.0',
-    meson_version: '>= 0.59.0'
+    meson_version: '>= 1.0.0'
 )
 
 python = import('python')
