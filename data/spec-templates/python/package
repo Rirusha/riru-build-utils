@@ -4,18 +4,18 @@ Name: @NAME@
 Version: @LAST@
 Release: alt1
 
-Summary: ASSERT
+Summary: @SUMMARY@
 License: @LICENSE@
-Group: ASSERT
-Url: ASSERT
-Vcs: ASSERT.git
+Group: Other
+Url: @URL@
+Vcs: @URL@.git
 BuildArch: noarch
 
 Source0: %name-%version.tar
 
 BuildRequires(pre): rpm-macros-meson rpm-build-python3
 BuildRequires: meson
-@DEPENDENCIES@
+@BUILD_DEPENDENCIES@
 
 %description
 %summary.

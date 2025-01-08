@@ -21,17 +21,26 @@ SPDX-License-Identifier: GPL-3.0-or-later
 import json
 import os
 import random
+import re
 from subprocess import Popen
 import subprocess
 import requests
+from rbu.aliases import Aliases
 from rbu.ssh_wrapper import SshWrapper
+import appstream_python
 
 
 GYLE = SshWrapper('gyle.altlinux.org', 'alt_rirusha')
 GITERY = SshWrapper('gitery.altlinux.org', 'alt_rirusha')
 
-class Constants:
-    PKGDATADIR = ''
+
+class Dependency:
+    name:str
+    version:str|None
+    
+    def __str__(self):
+        return self.name
+
 
 def ask(question: str) -> bool:
     i = input(question + ' [Y/n] ').lower()
@@ -96,6 +105,24 @@ def print_on_no():
         'Ok...',
         'nah, whatever...',
     ]))
+    
+def find_appstream_file() -> str|None:
+    data_path = os.path.join(os.path.curdir, 'data')
+    
+    if os.path.exists(data_path):
+        for file in os.listdir(data_path):
+            if '.appdata.xml' in file or '.metainfo.xml' in file:
+                return os.path.join(data_path, file)
+
+    return None
+
+def find_meson_var(name:str, meson_path:str) -> str|None:
+    with open(meson_path, 'r') as file:
+            for line in file.readlines():
+                if line.startswith(f'{name} = '):
+                    return line.split(f'{name} = ')[1].strip().strip('\'')
+
+    return None
 
 def create_spec(orig_spec_path:str):
     if not os.path.exists('_build'):
@@ -106,19 +133,67 @@ def create_spec(orig_spec_path:str):
     project_info = json.loads(project_info_json)
     name = project_info.get('descriptive_name', '')
     license_ = project_info.get('license', ['GPL-3.0-or-later'])[0]
-    dependencies = []
+    dependencies:list[Dependency] = []
 
+    aliases = Aliases()
+    true_name, alias = aliases.get(name)
+    url = alias.url
+    
+    appstream_path =find_appstream_file()
+    if appstream_path:
+        appstream = appstream_python.AppstreamComponent()
+        appstream.load_file(find_appstream_file())
+        
+        app_id = appstream.id
+        summary = appstream.summary.get_default_text()
+        description = appstream.description.to_plain_text()
+        description = re.sub(r' *\n ', ' ', description)
+        description = re.sub(r' +', ' ', description)
+        description = description.replace('•', '-')
+    else:
+        app_id = 'ASSERT'
+        summary = 'ASSERT'
+        description = '%summary.'
+        
     meson_path = os.path.join(os.path.curdir, 'meson.build')
     with open(meson_path, 'r') as file:
         for line in file.readlines():
+            # TODO: Realize multistring dependency
             if 'dependency(' in line:
-                dependencies.append(line.split('dependency(')[1].strip().strip('()').split(',')[0].strip('\''))
+                dep_string = line
+                dep_name = dep_string.split('dependency(')[1].strip().strip('()').split(',')[0].strip('\'')
+                if dep_name == 'threads':
+                    continue
+                
+                version = None
+                if 'version:' in dep_string:
+                    version_string = dep_string.split('version:')[1].strip().strip('()').split(',')[0].strip('\'')
+                    if not re.match(r'[=><]+ [\d\.]+', version_string):
+                        v = find_meson_var(version_string)
+                        if v:
+                            version = v
+                    else:
+                        version = version_string
+
+                dependency = Dependency()
+                dependency.name = dep_name
+                dependency.version = version
+                dependencies.append(dependency)
+
+    if app_id == '@APP_ID@':
+        app_id = find_meson_var('app_id', meson_path)
+        
+        if not app_id:
+            app_id = 'ASSERT'
 
     print ()
     print('Data:')
+    print('App ID: ' + app_id)
     print('Name: ' + name)
+    print('Summary: ' + summary)
+    print('Description: ' + ' '.join(description.split('\n')))
     print('License: ' + license_)
-    print('Dependencies: ' + ('-' if len(dependencies) == 0 else ', '.join(dependencies)))
+    print('Dependencies: ' + ('-' if len(dependencies) == 0 else ', '.join(map(lambda x: f'{x.name} {x.version}', dependencies))))
     print ()
 
     if not ask('All is chiky-pooky?'):
@@ -142,8 +217,17 @@ def create_spec(orig_spec_path:str):
     with open(orig_spec_path, 'r') as file:
         with open(new_spec_path, 'w') as new_file:
             for line in file.readlines():
-                # Stupid is my second name
-                new_file.write(line.replace('@NAME@', name).replace('@LICENSE@', license_).replace('@DEPENDENCIES@', '\n'.join(map(lambda x: f'BuildRequires: pkgconfig({x})', dependencies))))
+                new_line = line
+
+                new_line = new_line.replace('@APP_ID@', app_id)
+                new_line = new_line.replace('@NAME@', name)
+                new_line = new_line.replace('@SUMMARY@', summary)
+                new_line = new_line.replace('@DESCRIPTION@', format_description(description))
+                new_line = new_line.replace('@URL@', url)
+                new_line = new_line.replace('@LICENSE@', license_)
+                new_line = new_line.replace('@BUILD_DEPENDENCIES@', '\n'.join(map(lambda x: f'BuildRequires: pkgconfig({x.name}){f' {x.version}' if x.version else ''}', dependencies)))
+
+                new_file.write(new_line)
 
 def cut_version(version:str) -> tuple[str]:
     api_version = ''
@@ -172,3 +256,22 @@ def cut_version(version:str) -> tuple[str]:
         raise ValueError(f'Strange version \'{version}\'')
     
     return (api_version, minor_version)
+
+def format_description(description:str) -> str:
+    MAX_SIZE = 80
+    
+    new_desc:list[str] = []
+    for line in description.split('\n'):
+        new_desc_line = ''
+
+        lines_splitted = line.split(' ')
+        for line_splitted in lines_splitted:
+            if len(new_desc_line) + len(line_splitted) <= MAX_SIZE:
+                new_desc_line += line_splitted + ' '
+            else:
+                new_desc.append(new_desc_line.strip())
+                new_desc_line = line_splitted + ' '
+
+        new_desc.append(new_desc_line.strip())
+
+    return '\n'.join(new_desc)

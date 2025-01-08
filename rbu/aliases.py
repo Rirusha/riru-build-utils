@@ -22,7 +22,7 @@ import re
 import yaml
 import os
 
-from rbu.utils import Constants
+from rbu.constants import Constants
 
 
 class Alias:

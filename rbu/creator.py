@@ -20,7 +20,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 import os
 import shutil
-from rbu.utils import Constants, ask, create_spec, print_on_no
+from rbu.utils import ask, create_spec, print_on_no
+from rbu.constants import Constants
 
 
 class Creator:

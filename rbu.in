@@ -22,7 +22,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 from subprocess import Popen
 import sys
 
-from rbu.utils import Constants
+from rbu.constants import Constants
 from rbu.creator import Creator
 from rbu.tester import Tester
 from rbu.updater import Updater

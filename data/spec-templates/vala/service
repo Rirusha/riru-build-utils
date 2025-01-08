@@ -4,18 +4,18 @@ Name: @NAME@
 Version: @LAST@
 Release: alt1
 
-Summary: ASSERT
+Summary: @SUMMARY@
 License: @LICENSE@
-Group: ASSERT
-Url: ASSERT
-Vcs: ASSERT.git
+Group: Other
+Url: @URL@
+Vcs: @URL@.git
 
 Source: %name-%version.tar
 
 BuildRequires(pre): rpm-macros-meson
 BuildRequires: meson
 BuildRequires: vala
-@DEPENDENCIES@
+@BUILD_DEPENDENCIES@
 
 %description
 %summary.

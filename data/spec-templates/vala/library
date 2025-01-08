@@ -2,24 +2,24 @@
 
 %define api_version @LAST_API_VERSION@
 %define minor_version @LAST_MINOR_VERSION@
-%define gir_name ASSERT-%api_version
+%define gir_name @GIR_NAME@-%api_version
 
 Name: @NAME@-%api_version
 Version: %api_version.%minor_version
 Release: alt1
 
-Summary: ASSERT
+Summary: @SUMMARY@
 License: @LICENSE@
-Group: ASSERT
-Url: ASSERT
-Vcs: ASSERT.git
+Group: System/Libraries
+Url: @URL@
+Vcs: @URL@.git
 
 Source0: %name-%version.tar
 
 BuildRequires(pre): rpm-macros-meson rpm-build-vala rpm-build-gir
 BuildRequires: meson
 BuildRequires: vala
-@DEPENDENCIES@
+@BUILD_DEPENDENCIES@
 BuildRequires: gobject-introspection-devel
 
 %description
