@@ -27,7 +27,7 @@ import subprocess
 import requests
 from rbu.aliases import Aliases
 from rbu.ssh_wrapper import SshWrapper
-import appstream_python
+import rbu.appstream_python
 
 
 GYLE = SshWrapper('gyle.altlinux.org', 'alt_rirusha')
@@ -258,7 +258,8 @@ def cut_version(version:str) -> tuple[str]:
     return (api_version, minor_version)
 
 def format_description(description:str) -> str:
-    MAX_SIZE = 80
+    # https://www.altlinux.org/Spec#%25description
+    MAX_SIZE = 72
     
     new_desc:list[str] = []
     for line in description.split('\n'):
