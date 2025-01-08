@@ -27,7 +27,7 @@ import subprocess
 import requests
 from rbu.aliases import Aliases
 from rbu.ssh_wrapper import SshWrapper
-import rbu.appstream_python
+from rbu.appstream_python import AppstreamComponent
 
 
 GYLE = SshWrapper('gyle.altlinux.org', 'alt_rirusha')
@@ -141,7 +141,7 @@ def create_spec(orig_spec_path:str):
     
     appstream_path =find_appstream_file()
     if appstream_path:
-        appstream = appstream_python.AppstreamComponent()
+        appstream = AppstreamComponent()
         appstream.load_file(find_appstream_file())
         
         app_id = appstream.id
