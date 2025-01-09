@@ -32,7 +32,7 @@ def print_help():
     print ('Usage:')
     print ('\trbu create <language> <project type>')
     print ('\trbu update <git url or alias name> [<tag>] [<task-id-root>] [--test]')
-    print ('\trbu test [<working dir>]')
+    print ('\trbu test [<working dir>] [--without-deps]')
 
 def main():    
     argv = sys.argv.copy()
@@ -110,6 +110,12 @@ def update (argv:list[str]):
 
 def test (argv:list[str]):
     working_dir:str|None = None
+    without_deps = False
+
+    for arg in argv:
+        if arg == '--without-deps':
+            without_deps = True
+            argv.remove(arg)
 
     if len(argv) > 0:
         working_dir = argv.pop(0)
@@ -118,7 +124,7 @@ def test (argv:list[str]):
             print ('Too many args.')
             return
 
-    Tester(working_dir).test()
+    Tester(working_dir, not without_deps, without_deps).test()
 
 
 if __name__ == '__main__':

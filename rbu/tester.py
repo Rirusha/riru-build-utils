@@ -32,14 +32,18 @@ from rbu.utils import get_project_info, update_spec
 class Tester:
 
     working_dir:str|None
+    cleanup:bool
+    without_deps:bool
     aliases:Aliases
 
-    def __init__(self, working_dir:str|None=None):        
+    def __init__(self, working_dir:str|None=None, cleanup:bool=True, without_deps:bool=False):        
         self.aliases = Aliases()
 
+        self.cleanup = cleanup
         self.working_dir = working_dir if working_dir is not None else os.curdir
+        self.without_deps = without_deps
 
-    def test(self, cleanup:bool=True):
+    def test(self):
         os.chdir(self.working_dir)
 
         sisyphus_spec_dir = os.path.join(self.working_dir, 'build-aux', 'sisyphus')
@@ -78,17 +82,18 @@ class Tester:
         update_spec(spec_path, template_spec_path, version)
         Popen(['add_changelog', spec_path, '-e', f'- Test build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
         
-        if cleanup:
+        if self.cleanup:
             Popen(['hsh', '--cleanup-only'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
 
-        for dep in self.aliases.get(name)[1].dependencies:
-            dep_dir = os.path.join(tempfile.gettempdir(), 'riru-build-utils', 'test', name + dep)
-            url = self.aliases.get(dep)[1].url
-            if os.path.exists(dep_dir):
-                shutil.rmtree(dep_dir)
-            Popen(['git', 'clone', url, dep_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
-            os.chdir(dep_dir)
-            Tester(dep_dir).test(False)
+        if not self.without_deps:
+            for dep in self.aliases.get(name)[1].dependencies:
+                dep_dir = os.path.join(tempfile.gettempdir(), 'riru-build-utils', 'test', name + dep)
+                url = self.aliases.get(dep)[1].url
+                if os.path.exists(dep_dir):
+                    shutil.rmtree(dep_dir)
+                Popen(['git', 'clone', url, dep_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+                os.chdir(dep_dir)
+                Tester(dep_dir, False).test()
 
         os.chdir(test_dir)
         Popen(['git', 'add', '.'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
