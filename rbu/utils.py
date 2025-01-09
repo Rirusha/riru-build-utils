@@ -131,7 +131,7 @@ def create_spec(orig_spec_path:str):
     project_info_json = Popen(['meson', 'introspect', '--projectinfo', '_build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).communicate()[0]
 
     project_info = json.loads(project_info_json)
-    name = project_info.get('descriptive_name', '')
+    name:str = project_info.get('descriptive_name', '')
     license_ = project_info.get('license', ['GPL-3.0-or-later'])[0]
     dependencies:list[Dependency] = []
 
@@ -185,11 +185,17 @@ def create_spec(orig_spec_path:str):
         
         if not app_id:
             app_id = 'ASSERT'
+            
+    if name.startswith('lib'):
+        gir_name = kebab2pascal(name.replace('lib', '', 1))
+    else:
+        gir_name = 'ASSERT'
 
     print ()
     print('Data:')
     print('App ID: ' + app_id)
     print('Name: ' + name)
+    print('Gear Name: ' + gir_name)
     print('Summary: ' + summary)
     print('Description: ' + ' '.join(description.split('\n')))
     print('License: ' + license_)
@@ -221,6 +227,7 @@ def create_spec(orig_spec_path:str):
 
                 new_line = new_line.replace('@APP_ID@', app_id)
                 new_line = new_line.replace('@NAME@', name)
+                new_line = new_line.replace('@GIR_NAME@', gir_name)
                 new_line = new_line.replace('@SUMMARY@', summary)
                 new_line = new_line.replace('@DESCRIPTION@', format_description(description))
                 new_line = new_line.replace('@URL@', url)
@@ -276,3 +283,6 @@ def format_description(description:str) -> str:
         new_desc.append(new_desc_line.strip())
 
     return '\n'.join(new_desc)
+
+def kebab2pascal(kebab:str) -> str:
+    return ''.join(map(lambda x: x.capitalize(), kebab.split('-')))
