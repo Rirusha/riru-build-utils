@@ -137,7 +137,7 @@ def create_spec(orig_spec_path:str):
 
     aliases = Aliases()
     true_name, alias = aliases.get(name)
-    url = alias.url
+    url = alias.url.replace('.git', '')
     
     appstream_path =find_appstream_file()
     if appstream_path:
