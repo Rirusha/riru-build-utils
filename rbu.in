@@ -80,7 +80,7 @@ def create (argv:list[str]):
     Creator(language, project_type).create()
 
 def update (argv:list[str]):
-    name:str = ""
+    name:str|None = None
     tag:str|None = None
     task_root:str|None = None
     test:bool = False
@@ -102,9 +102,6 @@ def update (argv:list[str]):
                 if len(argv) > 0:
                     print ('Too many args.')
                     return
-    else:
-        print (f"Not enough args.")
-        return
 
     Updater(name, tag, task_root, test).update()
 

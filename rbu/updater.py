@@ -40,10 +40,22 @@ class Updater:
     root_task:str|None
     test:bool
     alias:Alias
-    
-    def __init__(self, name:str, tag:str|None, root_task:str|None, test:bool):
+
+    def __init__(self, name:str|None, tag:str|None, root_task:str|None, test:bool):
         aliases = Aliases()
-        
+
+        if not name:
+            spec_dir = os.path.join(os.curdir, 'build-aux', 'sisyphus')
+
+            if os.path.exists(spec_dir):
+                if len(os.listdir(spec_dir)) == 1:
+                    spec_name = os.listdir(spec_dir)[0]
+                    name = spec_name.replace('.spec', '')
+                else:
+                    raise Exception('No spec found or too many files found in spec dir')
+            else:
+                raise Exception('No spec dir found')
+
         nname = name
         name = name.lower()
 
@@ -74,7 +86,7 @@ class Updater:
         wd = os.path.join(root_tpm, self.name)
         os.makedirs(wd, exist_ok=True)
         os.chdir(wd)
-        
+
         if self.tag is None:
             if os.path.exists(self.name):
                 shutil.rmtree(self.name)
