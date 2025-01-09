@@ -24,6 +24,7 @@ import random
 import re
 from subprocess import Popen
 import subprocess
+from typing import Any
 import requests
 from rbu.aliases import Aliases
 from rbu.ssh_wrapper import SshWrapper
@@ -125,12 +126,7 @@ def find_meson_var(name:str, meson_path:str) -> str|None:
     return None
 
 def create_spec(orig_spec_path:str):
-    if not os.path.exists('_build'):
-        Popen(['meson', 'setup', '_build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
-
-    project_info_json = Popen(['meson', 'introspect', '--projectinfo', '_build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).communicate()[0]
-
-    project_info = json.loads(project_info_json)
+    project_info = get_project_info()
     name:str = project_info.get('descriptive_name', '')
     license_ = project_info.get('license', ['GPL-3.0-or-later'])[0]
     dependencies:list[Dependency] = []
@@ -169,7 +165,7 @@ def create_spec(orig_spec_path:str):
                 if 'version:' in dep_string:
                     version_string = dep_string.split('version:')[1].strip().strip('()').split(',')[0].strip('\'')
                     if not re.match(r'[=><]+ [\d\.]+', version_string):
-                        v = find_meson_var(version_string)
+                        v = find_meson_var(version_string, meson_path)
                         if v:
                             version = v
                     else:
@@ -286,3 +282,8 @@ def format_description(description:str) -> str:
 
 def kebab2pascal(kebab:str) -> str:
     return ''.join(map(lambda x: x.capitalize(), kebab.split('-')))
+
+def get_project_info() -> dict[Any]:
+    if not os.path.exists('_build'):
+        Popen(['meson', 'setup', '_build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+    return json.loads(Popen(['meson', 'introspect', '--projectinfo', '_build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).communicate()[0])

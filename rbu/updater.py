@@ -180,7 +180,7 @@ class Updater:
             Popen(['git', 'push'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
 
         old_spec_path = os.path.join(gitery_path, '.gear', f'{self.name}.spec')
-        template_spec_path = os.path.join(wd, sources_dir, 'build-aux', 'sisyphus', f'{self.alias.name}.spec')
+        template_spec_path = os.path.join(wd, sources_dir, 'build-aux', 'sisyphus', f'{self.alias.name.lower()}.spec')
 
         if not os.path.exists(template_spec_path):
             raise Exception(f'No template spec file in \'{self.name}\' {self.tag}')
@@ -207,7 +207,7 @@ class Updater:
         task_id = self.root_task if self.root_task is not None else GYLE.execute('task new')[0]
 
         for dep in self.alias.dependencies:
-            Updater(dep, None, task_id).update()
+            Updater(dep, None, task_id, self.test).update()
 
         try:
             GYLE.execute(f'task add {task_id} repo {self.name} {self.version}-alt1')

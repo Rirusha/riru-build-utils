@@ -48,7 +48,7 @@
     url: https://github.com/Rirusha/libvazzy.git
 
 - foldy:
-    name: foldy
+    name: Foldy
     url: https://github.com/alt-gnome/Foldy.git
     dependencies:
       - libfoldy-1

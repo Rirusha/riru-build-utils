@@ -26,7 +26,7 @@ import subprocess
 import tempfile
 
 from rbu.aliases import Aliases
-from rbu.utils import update_spec
+from rbu.utils import get_project_info, update_spec
 
 
 class Tester:
@@ -72,7 +72,7 @@ class Tester:
         spec_path = os.path.join(gear_path, f'{name}.spec')
         template_spec_path = os.path.join(sisyphus_spec_dir, f'{name}.spec')
         
-        project_info = json.loads(Popen(['meson', 'introspect', '--projectinfo', '_build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).communicate()[0])
+        project_info = get_project_info()
         version = project_info.get('version')
 
         update_spec(spec_path, template_spec_path, version)
@@ -83,11 +83,11 @@ class Tester:
 
         for dep in self.aliases.get(name)[1].dependencies:
             dep_dir = os.path.join(tempfile.gettempdir(), 'riru-build-utils', 'test', name + dep)
-            os.chdir()
             url = self.aliases.get(dep)[1].url
-            if not os.path.exists(dep_dir):
+            if os.path.exists(dep_dir):
                 shutil.rmtree(dep_dir)
             Popen(['git', 'clone', url, dep_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+            os.chdir(dep_dir)
             Tester(dep_dir).test(False)
 
         os.chdir(test_dir)
