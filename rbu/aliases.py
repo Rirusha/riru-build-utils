@@ -29,6 +29,7 @@ class Alias:
     name:str
     api_version:str|None
     url:str
+    depricated:bool
     dependencies:list[str]
 
 
@@ -51,10 +52,13 @@ class Aliases:
                         alias_data['api-version'] = None
                     if 'dependencies' not in alias_data:
                         alias_data['dependencies'] = []
+                    if 'depricated' not in alias_data:
+                        alias_data['depricated'] = False
 
                     alias.name = alias_data['name']
                     alias.api_version = alias_data['api-version']
                     alias.url = alias_data['url']
+                    alias.depricated = alias_data['depricated']
                     alias.dependencies = alias_data['dependencies']
                     self._data[name] = alias
 
@@ -82,5 +86,8 @@ class Aliases:
         goods.sort(key=lambda x: float(x.api_version), reverse=True)
         
         true_name = f'{goods[0].name}' + (f'-{goods[0].api_version}' if goods[0].api_version is not None else '')
+        
+        if goods[0].depricated:
+            raise ValueError(f'Alias {name} is depricated. There is no point to package it')
         
         return (true_name, goods[0])

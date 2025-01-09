@@ -69,6 +69,7 @@
 - phosh-wallpaperd:
     name: alt-regular-backgrounds
     url: https://github.com/alt-gnome/phosh-wallpaperd.git
+    depricated: true
 
 - resonance:
     name: resonance
