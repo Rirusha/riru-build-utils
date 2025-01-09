@@ -145,7 +145,7 @@ def create_spec(orig_spec_path:str):
         description = appstream.description.to_plain_text()
         description = re.sub(r' *\n ', ' ', description)
         description = re.sub(r' +', ' ', description)
-        description = description.replace('•', '-')
+        description = description.replace('•', '*')
     else:
         app_id = 'ASSERT'
         summary = 'ASSERT'
