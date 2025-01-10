@@ -5,7 +5,7 @@
       - libtape-0.2
 
 - libtape-0.2:
-    name: cassette
+    name: libtape
     api-version: 0.2
     url: https://gitlab.gnome.org/Rirusha/libtape.git
     dependencies:
