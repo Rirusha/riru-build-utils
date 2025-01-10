@@ -92,6 +92,8 @@ def update_spec(true_spec_path:str, template_spec_path:str, version:str):
                 file.write(line.replace('@LAST_MINOR_VERSION@', cut_version(version)[1]))
             elif line.startswith('Release:'):
                 file.write('Release: alt1')
+            elif '@ASSERT@' in line:
+                raise Exception(f'Assertion found in spec:\n{line}')
             else:
                 file.write(line)
 
@@ -132,6 +134,9 @@ def create_spec(orig_spec_path:str):
     dependencies:list[Dependency] = []
 
     aliases = Aliases()
+    if aliases.get(name) is None:
+        raise Exception(f'Alias for {name} not found')
+
     true_name, alias = aliases.get(name)
     url = alias.url.replace('.git', '')
     
@@ -147,8 +152,8 @@ def create_spec(orig_spec_path:str):
         description = re.sub(r' +', ' ', description)
         description = description.replace('•', '*')
     else:
-        app_id = 'ASSERT'
-        summary = 'ASSERT'
+        app_id = '@ASSERT@'
+        summary = '@ASSERT@'
         description = '%summary.'
         
     meson_path = os.path.join(os.path.curdir, 'meson.build')
@@ -180,12 +185,12 @@ def create_spec(orig_spec_path:str):
         app_id = find_meson_var('app_id', meson_path)
         
         if not app_id:
-            app_id = 'ASSERT'
+            app_id = '@ASSERT@'
             
     if name.startswith('lib'):
         gir_name = kebab2pascal(name.replace('lib', '', 1))
     else:
-        gir_name = 'ASSERT'
+        gir_name = '@ASSERT@'
 
     print ()
     print('Data:')
@@ -231,6 +236,23 @@ def create_spec(orig_spec_path:str):
                 new_line = new_line.replace('@BUILD_DEPENDENCIES@', '\n'.join(map(lambda x: f'BuildRequires: pkgconfig({x.name}){f' {x.version}' if x.version else ''}', dependencies)))
 
                 new_file.write(new_line)
+                
+    spec:list[str] = []
+    with open(new_spec_path, 'r') as file:
+        spec = file.readlines()
+    
+    with open(new_spec_path, 'w') as file:
+        for line in spec:
+            if '@ASSERT@' in line:
+                print()
+                print('ASSERT found in spec file')
+                print(line.strip())
+                val = input('What should it be? : ')
+                file.write(line.replace('@ASSERT@', val))
+            else:
+                file.write(line)
+
+    print(f'Spec file \'{new_spec_path}\' created.')
 
 def cut_version(version:str) -> tuple[str]:
     api_version = ''
