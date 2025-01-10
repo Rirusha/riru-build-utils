@@ -24,11 +24,12 @@ import random
 import re
 from subprocess import Popen
 import subprocess
+import sys
 from typing import Any
 import requests
 from rbu.aliases import Aliases
 from rbu.ssh_wrapper import SshWrapper
-from rbu.appstream_python import AppstreamComponent
+from rbu.appstream_python import AppstreamComponent, Release
 
 
 GYLE = SshWrapper('gyle.altlinux.org', 'alt_rirusha')
@@ -92,8 +93,6 @@ def update_spec(true_spec_path:str, template_spec_path:str, version:str):
                 file.write(line.replace('@LAST_MINOR_VERSION@', cut_version(version)[1]))
             elif line.startswith('Release:'):
                 file.write('Release: alt1')
-            elif '@ASSERT@' in line:
-                raise Exception(f'Assertion found in spec:\n{line}')
             else:
                 file.write(line)
 
@@ -109,8 +108,8 @@ def print_on_no():
         'nah, whatever...',
     ]))
     
-def find_appstream_file() -> str|None:
-    data_path = os.path.join(os.path.curdir, 'data')
+def find_appstream_file(project_dir:str) -> str|None:
+    data_path = os.path.join(project_dir, 'data')
     
     if os.path.exists(data_path):
         for file in os.listdir(data_path):
@@ -135,15 +134,15 @@ def create_spec(orig_spec_path:str):
 
     aliases = Aliases()
     if aliases.get(name) is None:
-        raise Exception(f'Alias for {name} not found')
+        print_error(f'Alias for {name} not found')
 
     true_name, alias = aliases.get(name)
     url = alias.url.replace('.git', '')
     
-    appstream_path =find_appstream_file()
+    appstream_path =find_appstream_file(os.path.curdir)
     if appstream_path:
         appstream = AppstreamComponent()
-        appstream.load_file(find_appstream_file())
+        appstream.load_file(appstream_path)
         
         app_id = appstream.id
         summary = appstream.summary.get_default_text()
@@ -260,10 +259,10 @@ def cut_version(version:str) -> tuple[str]:
 
     version_parts = version.split('.')
     if len(version_parts) == 1:
-        raise ValueError('Version must be in the format 0.x.y or x.y')
+        print_error('Version must be in the format 0.x.y or x.y')
     elif len(version_parts) == 2:
         if version_parts[0] == '0':
-            raise ValueError('Version must be in the format 0.x.y or x.y or x.y.z')
+            print_error('Version must be in the format 0.x.y or x.y or x.y.z')
 
         api_version = version_parts[0]
         minor_version = version_parts[1]
@@ -275,10 +274,10 @@ def cut_version(version:str) -> tuple[str]:
             api_version = version_parts[0]
             minor_version = version_parts[1] + '.' + version_parts[2]
     else:
-        raise ValueError('Version must be in the format 0.x.y or x.y or x.y.z')
+        print_error('Version must be in the format 0.x.y or x.y or x.y.z')
 
     if api_version == '' or minor_version == '':
-        raise ValueError(f'Strange version \'{version}\'')
+        print_error(f'Strange version \'{version}\'')
     
     return (api_version, minor_version)
 
@@ -309,3 +308,7 @@ def get_project_info() -> dict[Any]:
     if not os.path.exists('_build'):
         Popen(['meson', 'setup', '_build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
     return json.loads(Popen(['meson', 'introspect', '--projectinfo', '_build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).communicate()[0])
+
+def print_error (message:str) -> None:
+    print(f'\033[91m{message}\033[0m')
+    sys.exit(1)

@@ -26,7 +26,7 @@ import subprocess
 import tempfile
 
 from rbu.aliases import Aliases
-from rbu.utils import get_project_info, update_spec
+from rbu.utils import get_project_info, print_error, update_spec
 
 
 class Tester:
@@ -48,11 +48,11 @@ class Tester:
 
         sisyphus_spec_dir = os.path.join(self.working_dir, 'build-aux', 'sisyphus')
         if not os.path.exists(sisyphus_spec_dir):
-            raise Exception(f'No template spec file')
+            print_error(f'No template spec file')
 
         sisyphus_spec_dir_ls = os.listdir(sisyphus_spec_dir)
         if len(sisyphus_spec_dir_ls) != 1:
-            raise Exception(f'No template spec file or too many files in spec dir')
+            print_error(f'No template spec file or too many files in spec dir')
 
         name = sisyphus_spec_dir_ls[0].replace('.spec', '')
 
@@ -65,7 +65,7 @@ class Tester:
         shutil.copytree(self.working_dir, test_dir, ignore=shutil.ignore_patterns('_build'))
 
         if self.aliases.get(name) is None:
-            raise Exception(f'Alias \'{name}\' not found')
+            print_error(f'Alias \'{name}\' not found')
 
         gear_path = os.path.join(test_dir, '.gear')
         os.makedirs(gear_path)

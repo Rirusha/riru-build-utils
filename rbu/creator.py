@@ -20,7 +20,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 import os
 import shutil
-from rbu.utils import ask, create_spec, print_on_no
+from rbu.utils import ask, create_spec, print_error, print_on_no
 from rbu.constants import Constants
 
 
@@ -41,12 +41,12 @@ class Creator:
         templates_dir = os.path.join(Constants.PKGDATADIR, 'spec-templates')
 
         if self.language not in os.listdir(templates_dir):
-            raise ValueError(f'Language \'{self.language}\' not supported. Supported languages: {', '.join(os.listdir(templates_dir))}')
+            print_error(f'Language \'{self.language}\' not supported. Supported languages: {', '.join(os.listdir(templates_dir))}')
 
         language_dir = os.path.join(templates_dir, self.language)
 
         if self.project_type not in os.listdir(language_dir):
-            raise ValueError(f'Project type \'{self.project_type}\' not supported. Supported types: {', '.join(os.listdir(language_dir))}')
+            print_error(f'Project type \'{self.project_type}\' not supported. Supported types: {', '.join(os.listdir(language_dir))}')
 
         spec_path = os.path.join(language_dir, self.project_type)
 

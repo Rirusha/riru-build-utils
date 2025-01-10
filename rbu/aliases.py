@@ -23,6 +23,7 @@ import yaml
 import os
 
 from rbu.constants import Constants
+from rbu.utils import print_error
 
 
 class Alias:
@@ -45,9 +46,9 @@ class Aliases:
                     alias = Alias()
 
                     if 'name' not in alias_data:
-                        raise ValueError(f'Alias {name} has no name')
+                        print_error(f'Alias {name} has no name')
                     if 'url' not in alias_data:
-                        raise ValueError(f'Alias {name} has no url')
+                        print_error(f'Alias {name} has no url')
                     if 'api-version' not in alias_data:
                         alias_data['api-version'] = None
                     if 'dependencies' not in alias_data:
@@ -88,6 +89,6 @@ class Aliases:
         true_name = f'{goods[0].name}' + (f'-{goods[0].api_version}' if goods[0].api_version is not None else '')
         
         if goods[0].depricated:
-            raise ValueError(f'Alias {name} is depricated. There is no point to package it')
+            print_error(f'Alias {name} is depricated. There is no point to package it')
         
         return (true_name, goods[0])

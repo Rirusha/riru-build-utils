@@ -15,12 +15,18 @@ BuildArch: noarch
 
 Source0: %name-%version.tar
 
+Requires: rpm-utils
+Requires: gear
+Requires: ssh
+Requires: git
+
 BuildRequires(pre): rpm-macros-meson rpm-build-python3
 BuildRequires: meson
 BuildRequires: python3-module-paramiko
 
 %description
 %summary.
+
 Contains update, test and create commands.
 
 %prep
