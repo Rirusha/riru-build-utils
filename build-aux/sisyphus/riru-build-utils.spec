@@ -11,7 +11,6 @@ License: GPL-3.0-or-later
 Group: Development/Tools
 Url: https://github.com/Rirusha/riru-build-utils
 Vcs: https://github.com/Rirusha/riru-build-utils.git
-BuildArch: noarch
 
 Source0: %name-%version.tar
 
