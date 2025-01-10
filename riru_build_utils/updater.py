@@ -211,18 +211,20 @@ class Updater:
                 appstream = AppstreamComponent()
                 appstream.load_file(appstream_path)
 
-                description = appstream.releases.pop().description.to_plain_text().strip()
-                description = re.sub(r' *\n ', ' ', description)
-                description = re.sub(r' +', ' ', description)
-                description = description.replace('•', '*')
-                changelog.extend(map(lambda x: f'- {x}' if not x.startswith('x') else x, description.split('\n')))
+                release = appstream.releases.pop()
+                if release.version == self.version:
+                    description = release.description.to_plain_text().strip()
+                    description = re.sub(r' *\n ', ' ', description)
+                    description = re.sub(r' +', ' ', description)
+                    description = description.replace('•', '*')
+                    changelog.extend(map(lambda x: f'- {x}' if not x.startswith('x') else x, description.split('\n')))
 
-                print('Changelog:')
-                for line in changelog:
-                    print(line)
-                if not ask('All is chiky-pooky?'):
-                    print_on_no()
-                    return
+                    print('Changelog:')
+                    for line in changelog:
+                        print(line)
+                    if not ask('All is chiky-pooky?'):
+                        print_on_no()
+                        return
 
             Popen(['add_changelog', old_spec_path, '-e', '\n'.join(changelog)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
 
