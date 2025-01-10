@@ -13,12 +13,7 @@ Url: https://github.com/Rirusha/riru-build-utils
 Vcs: https://github.com/Rirusha/riru-build-utils.git
 BuildArch: noarch
 
-Source0: %name-%version.tar
-
-Requires: rpm-utils
-Requires: gear
-Requires: ssh
-Requires: git
+Source: %name-%version.tar
 
 BuildRequires(pre): rpm-macros-meson rpm-build-python3
 BuildRequires: meson
@@ -44,5 +39,5 @@ Contains update, test and create commands.
 
 %files
 %_bindir/%shortname
-%python3_sitelibdir_noarch/rbu/
+%python3_sitelibdir_noarch/%name/
 %_datadir/%name/

@@ -11,7 +11,7 @@ Url: @URL@
 Vcs: @URL@.git
 BuildArch: noarch
 
-Source0: %name-%version.tar
+Source: %name-%version.tar
 
 BuildRequires(pre): rpm-macros-meson rpm-build-python3
 BuildRequires: meson

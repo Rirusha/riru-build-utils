@@ -24,7 +24,7 @@ PKGDATA_DIR = get_option('prefix') / get_option('datadir') / meson.project_name 
 subdir('data')
 
 install_subdir(
-    'rbu',
+    meson.project_name(),
     install_dir: py_installation.get_install_dir()
 )
 

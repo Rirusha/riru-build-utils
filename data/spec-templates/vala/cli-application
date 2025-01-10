@@ -10,7 +10,7 @@ Group: Other
 Url: @URL@
 Vcs: @URL@.git
 
-Source0: %name-%version.tar
+Source: %name-%version.tar
 
 BuildRequires(pre): rpm-macros-meson
 BuildRequires: meson
