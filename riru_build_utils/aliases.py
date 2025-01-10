@@ -22,8 +22,8 @@ import re
 import yaml
 import os
 
-from rbu.constants import Constants
-from rbu.utils import print_error
+from riru_build_utils.constants import Constants
+from riru_build_utils.utils import print_error
 
 
 class Alias:

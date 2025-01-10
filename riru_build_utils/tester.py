@@ -25,8 +25,8 @@ from subprocess import Popen
 import subprocess
 import tempfile
 
-from rbu.aliases import Aliases
-from rbu.utils import get_project_info, print_error, update_spec
+from riru_build_utils.aliases import Aliases
+from riru_build_utils.utils import get_project_info, print_error, update_spec
 
 
 class Tester:

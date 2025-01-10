@@ -27,8 +27,8 @@ import subprocess
 import sys
 from typing import Any
 import requests
-from rbu.ssh_wrapper import SshWrapper
-from rbu.appstream_python import AppstreamComponent, Release
+from riru_build_utils.ssh_wrapper import SshWrapper
+from riru_build_utils.appstream_python import AppstreamComponent, Release
 
 
 GYLE = SshWrapper('gyle.altlinux.org', 'alt_rirusha')
@@ -131,7 +131,7 @@ def create_spec(orig_spec_path:str):
     license_ = project_info.get('license', ['GPL-3.0-or-later'])[0]
     dependencies:list[Dependency] = []
     
-    from rbu.aliases import Aliases
+    from riru_build_utils.aliases import Aliases
 
     aliases = Aliases()
     if aliases.get(name) is None:

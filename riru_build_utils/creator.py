@@ -20,8 +20,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 import os
 import shutil
-from rbu.utils import ask, create_spec, print_error, print_on_no
-from rbu.constants import Constants
+from riru_build_utils.utils import ask, create_spec, print_error, print_on_no
+from riru_build_utils.constants import Constants
 
 
 class Creator:

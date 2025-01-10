@@ -28,9 +28,9 @@ from subprocess import Popen
 import os
 
 import requests
-from rbu.aliases import Alias, Aliases
-from rbu.appstream_python.Component import AppstreamComponent
-from rbu.utils import GITERY, GYLE, ask, find_appstream_file, get_package_repo_version, print_error, print_on_no, update_spec
+from riru_build_utils.aliases import Alias, Aliases
+from riru_build_utils.appstream_python.Component import AppstreamComponent
+from riru_build_utils.utils import GITERY, GYLE, ask, find_appstream_file, get_package_repo_version, print_error, print_on_no, update_spec
 
 
 class Updater:

@@ -22,10 +22,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
 from subprocess import Popen
 import sys
 
-from rbu.constants import Constants
-from rbu.creator import Creator
-from rbu.tester import Tester
-from rbu.updater import Updater
+from riru_build_utils.constants import Constants
+from riru_build_utils.creator import Creator
+from riru_build_utils.tester import Tester
+from riru_build_utils.updater import Updater
 
 
 def print_help():

@@ -14,7 +14,7 @@ Group: System/Libraries
 Url: @URL@
 Vcs: @URL@.git
 
-Source0: %name-%version.tar
+Source: %name-%version.tar
 
 BuildRequires(pre): rpm-macros-meson rpm-build-vala rpm-build-gir
 BuildRequires: meson
