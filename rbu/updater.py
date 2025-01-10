@@ -202,7 +202,7 @@ class Updater:
         update_spec(old_spec_path, template_spec_path, self.version)
         
         if spec_file_created:
-            Popen(['add_changelog', old_spec_path, '-e', f'- Initial build for sisyphus'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+            Popen(['add_changelog', old_spec_path, '-e', f'- Initial build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'add', old_spec_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'commit', '-m', 'Add spec file'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
             Popen(['git', 'push'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
