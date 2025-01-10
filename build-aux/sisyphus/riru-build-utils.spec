@@ -18,7 +18,7 @@ Source: %name-%version.tar
 
 Requires: rpm-utils
 Requires: gear
-Requires: ssh
+Requires: /usr/bin/ssh
 Requires: git
 
 BuildRequires(pre): rpm-macros-meson rpm-build-python3
