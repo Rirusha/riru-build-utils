@@ -30,7 +30,7 @@ import os
 import requests
 from rbu.aliases import Alias, Aliases
 from rbu.appstream_python.Component import AppstreamComponent
-from rbu.utils import GITERY, GYLE, ask, find_appstream_file, form_changelog, get_package_repo_version, print_error, print_on_no, update_spec
+from rbu.utils import GITERY, GYLE, ask, find_appstream_file, get_package_repo_version, print_error, print_on_no, update_spec
 
 
 class Updater:

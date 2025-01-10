@@ -27,7 +27,6 @@ import subprocess
 import sys
 from typing import Any
 import requests
-from rbu.aliases import Aliases
 from rbu.ssh_wrapper import SshWrapper
 from rbu.appstream_python import AppstreamComponent, Release
 
@@ -131,6 +130,8 @@ def create_spec(orig_spec_path:str):
     name:str = project_info.get('descriptive_name', '')
     license_ = project_info.get('license', ['GPL-3.0-or-later'])[0]
     dependencies:list[Dependency] = []
+    
+    from rbu.aliases import Aliases
 
     aliases = Aliases()
     if aliases.get(name) is None:
