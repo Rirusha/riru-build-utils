@@ -1,6 +1,7 @@
 %define _unpackaged_files_terminate_build 1
 
 %define shortname rbu
+%define snakename riru_build_utils
 
 Name: riru-build-utils
 Version: @LAST@
@@ -44,5 +45,5 @@ Contains update, test and create commands.
 
 %files
 %_bindir/%shortname
-%python3_sitelibdir_noarch/%name/
+%python3_sitelibdir_noarch/%snakename/
 %_datadir/%name/
