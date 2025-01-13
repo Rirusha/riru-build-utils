@@ -62,7 +62,7 @@
     name: ready-set
     url: https://github.com/alt-gnome/ReadySet.git
 
-- alt-regular-backgrounds:
+- wallpapers-alt-regular:
     name: alt-regular-backgrounds
     url: https://github.com/alt-gnome/alt-regular-backgrounds.git
 

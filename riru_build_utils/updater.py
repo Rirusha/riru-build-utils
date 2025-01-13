@@ -177,16 +177,16 @@ class Updater:
         if not found:
             GITERY.execute(f'init-db {self.name}')
 
-        Popen(['git', 'clone', f'gitery:packages/{self.name}.git', gitery_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+        Popen(['git', 'clone', f'gitery:packages/{self.name}.git', gitery_path], text=True).wait()
         if os.path.exists(gitery_src_path):
             shutil.rmtree(gitery_src_path)
         shutil.copytree(sources_dir, os.path.join(gitery_path, self.name))
         os.chdir(gitery_path)
 
         if not found:
-            Popen(['git', 'add', '.'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
-            Popen(['git', 'commit', '-m', 'Init with upstream sources'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
-            Popen(['git', 'push'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+            Popen(['git', 'add', '.'], text=True).wait()
+            Popen(['git', 'commit', '-m', 'Init with upstream sources'], text=True).wait()
+            Popen(['git', 'push'], text=True).wait()
 
         gear_path = os.path.join(gitery_path, '.gear')
         if not os.path.exists(gear_path):
@@ -228,12 +228,12 @@ class Updater:
 
             Popen(['add_changelog', old_spec_path, '-e', '\n'.join(changelog)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
 
-        Popen(['git', 'add', '.'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
-        Popen(['gear-commit', '--no-edit'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
-        Popen(['git', 'push'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
-        Popen(['gear-create-tag'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+        Popen(['git', 'add', '.'], text=True).wait()
+        Popen(['gear-commit', '--no-edit'], text=True).wait()
+        Popen(['git', 'push'], text=True).wait()
+        Popen(['gear-create-tag'], text=True).wait()
 
-        Popen(['git', 'push', '--tags'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+        Popen(['git', 'push', '--tags'], text=True).wait()
         
         os.chdir(wd)
 
