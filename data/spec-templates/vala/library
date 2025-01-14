@@ -39,7 +39,7 @@ Summary: Development vapi files for %name
 Group: System/Libraries
 BuildArch: noarch
 
-Requires: %name = %EVR
+Requires: %name-devel = %EVR
 
 %description devel-vala
 %summary.
