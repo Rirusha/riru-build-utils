@@ -1,5 +1,5 @@
 project('riru-build-utils',
-    version: '0.6.11',
+    version: '0.7.0',
     meson_version: '>= 1.0.0'
 )
 
