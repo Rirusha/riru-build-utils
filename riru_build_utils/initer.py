@@ -53,3 +53,4 @@ class Initer:
                 shutil.rmtree (self.clone_path)
 
         Popen(['git', 'clone', template.url, self.clone_path]).wait()
+        shutil.rmtree(os.path.join(self.clone_path, '.git'))
