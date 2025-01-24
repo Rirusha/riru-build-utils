@@ -28,23 +28,23 @@ from subprocess import Popen
 import os
 
 import requests
-from riru_build_utils.aliases import Alias, Aliases
+from riru_build_utils.projects import Project, Projects
 from riru_build_utils.appstream_python.Component import AppstreamComponent
 from riru_build_utils.utils import GITERY, GYLE, ask, find_appstream_file, get_package_repo_version, print_error, print_on_no, update_spec
 
 
 class Updater:
-    
+
     url:str
     name:str
     version:str|None
     tag:str|None
     root_task:str|None
     test:bool
-    alias:Alias
+    alias:Project
 
     def __init__(self, name:str|None, tag:str|None, root_task:str|None, test:bool):
-        aliases = Aliases()
+        aliases = Projects()
 
         if not name:
             spec_dir = os.path.join(os.curdir, 'build-aux', 'sisyphus')
@@ -63,17 +63,17 @@ class Updater:
 
         if name.endswith('.git') or name.startswith('https://'):
             nname = name
-            
+
             if not name.endswith('.git'):
                 name += '.git'
-            
-            name = aliases.find_by_url(name)
-            
+
+            name = aliases.find_project_by_url(name)
+
             if name is None:
                 print_error(f'Alias for \'{nname}\' not found')
-            
-        name, self.alias = aliases.get(name)
-            
+
+        name, self.alias = aliases.get_project(name)
+
         if self.alias is None:
             print_error(f'Alias \'{name}\' not found')
 
@@ -99,7 +99,7 @@ class Updater:
 
             output = Popen(['git', 'describe', '--tags', '--abbrev=0'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).communicate()[0]
             self.tag = output.split('\n')[0]
-            
+
         if self.tag is None or self.tag == '':
             print_error(f'Tag for \'{self.name}\' not found')
 
@@ -121,13 +121,13 @@ class Updater:
         print('HasRootTask: ' + ('true' if self.root_task is not None else 'false'))
         print('Test: ' + ('true' if self.test else 'false'))
         print ()
-        
+
         if not ask('All is chiky-pooky?'):
             print_on_no()
             return
 
         os.chdir(wd)
-        
+
         archive_url = ''
         sources_name = ''
         if self.url.startswith('https://github.com/'):
@@ -141,7 +141,7 @@ class Updater:
 
         resp = requests.get(archive_url)
         resp.raise_for_status()
-        
+
         archive_file = os.path.join(wd, self.name + '.tar.gz')
         with open(archive_file, 'wb') as file:
             file.write(resp.content)
@@ -167,7 +167,7 @@ class Updater:
             shutil.rmtree(gitery_path)
 
         all_alt_git = GITERY.execute('ls packages')[1:]
-        
+
         found = False
         for line in all_alt_git:
             if line.split(' ')[-1].replace('.git', '') == self.name:
@@ -200,9 +200,9 @@ class Updater:
         spec_file_created_now = not os.path.exists(old_spec_path)
 
         update_spec(old_spec_path, template_spec_path, self.version)
-        
+
         if spec_file_created_now:
-            Popen(['add_changelog', old_spec_path, '-e', f'- Initial build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+            Popen(['add_changelog', old_spec_path, '-e', f'- Initial build.'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
         else:
             changelog:list[str] = [f'- New version: {self.version}']
 
@@ -226,7 +226,7 @@ class Updater:
                         print_on_no()
                         return
 
-            Popen(['add_changelog', old_spec_path, '-e', '\n'.join(changelog)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+            Popen(['add_changelog', old_spec_path, '-e', '.\n'.join(changelog)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
 
         Popen(['git', 'add', '.'], text=True).wait()
         Popen(['gear-commit', '--no-edit'], text=True).wait()
@@ -234,7 +234,7 @@ class Updater:
         Popen(['gear-create-tag'], text=True).wait()
 
         Popen(['git', 'push', '--tags'], text=True).wait()
-        
+
         os.chdir(wd)
 
         task_id = self.root_task if self.root_task is not None else GYLE.execute('task new')[0]

@@ -1,0 +1,106 @@
+projects:
+    cassette:
+        name: cassette
+        url: https://gitlab.gnome.org/Rirusha/Cassette.git
+        dependencies:
+            - libtape-0.2
+
+    libtape-0.2:
+        name: libtape
+        api-version: 0.2
+        url: https://gitlab.gnome.org/Rirusha/libtape.git
+        dependencies:
+            - libyandex-music-api-0.2
+
+    libyandex-music-api-0.2:
+        name: libyandex-music-api
+        api-version: 0.2
+        url: https://gitlab.gnome.org/Rirusha/yandex-music-api-vala.git
+        dependencies:
+            - libapi-base-1
+
+    libapi-base-1:
+        name: libapi-base
+        api-version: 1
+        url: https://gitlab.gnome.org/Rirusha/libapi-base.git
+
+    libicons-cache-1:
+        name: libicons-cache
+        api-version: 1
+        url: https://gitlab.gnome.org/Rirusha/libicons-cache.git
+
+    apa:
+        name: apa
+        url: https://github.com/alt-gnome/apa.git
+        dependencies:
+            - libalt-repo-1
+            - libvazzy-1
+
+    libalt-repo-1:
+        name: libalt-repo
+        api-version: 1
+        url: https://github.com/alt-gnome/libalt-repo-vala.git
+        dependencies:
+            - libapi-base-1
+
+    libvazzy-1:
+        name: libvazzy
+        api-version: 1
+        url: https://github.com/Rirusha/libvazzy.git
+
+    foldy:
+        name: Foldy
+        url: https://github.com/alt-gnome/Foldy.git
+        dependencies:
+            - libfoldy-1
+
+    libfoldy-1:
+        name: libfoldy
+        api-version: 1
+        url: https://github.com/alt-gnome/libfoldy.git
+
+    ready-set:
+        name: ready-set
+        url: https://github.com/alt-gnome/ReadySet.git
+
+    wallpapers-alt-regular:
+        name: alt-regular-backgrounds
+        url: https://github.com/alt-gnome/alt-regular-backgrounds.git
+
+    phosh-wallpaperd:
+        name: alt-regular-backgrounds
+        url: https://github.com/alt-gnome/phosh-wallpaperd.git
+        depricated: true
+
+    resonance:
+        name: resonance
+        url: https://github.com/alt-gnome/Resonance.git
+
+    riru-build-utils:
+        name: riru-build-utils
+        url: https://github.com/Rirusha/riru-build-utils.git
+
+    libvalagram-1:
+        name: libvalagram
+        api-version: 1
+        url: https://github.com/Rirusha/libvalagram.git
+
+    prophecy:
+        name: prophecy
+        url: https://github.com/Rirusha/prophecy.git
+
+    inventor:
+        name: inventor
+        url: https://github.com/alt-gnome/Inventor.git
+
+    passwd-gui:
+        name: passwd-gui
+        url: https://github.com/Rirusha/passwd-gui.git
+
+templates:
+    vala:
+        gnome-application:
+            url: https://github.com/alt-gnome/vala-application-template.git
+
+        library:
+            url: https://github.com/alt-gnome/vala-library-template.git

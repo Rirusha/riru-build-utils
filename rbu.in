@@ -22,10 +22,13 @@ SPDX-License-Identifier: GPL-3.0-or-later
 from subprocess import Popen
 import sys
 
+from riru_build_utils.cloner import Cloner
 from riru_build_utils.constants import Constants
 from riru_build_utils.creator import Creator
+from riru_build_utils.initer import Initer
 from riru_build_utils.tester import Tester
 from riru_build_utils.updater import Updater
+from riru_build_utils.utils import print_error
 
 
 def print_help():
@@ -33,16 +36,18 @@ def print_help():
     print ('\trbu create <language> <project type>')
     print ('\trbu update <git url or alias name> [<tag>] [<task-id-root>] [--test]')
     print ('\trbu test [<working dir>] [--without-deps]')
+    print ('\trbu clone [<names>] [--with-deps]|[--all]')
+    print ('\trbu init <language> <project type> <name>')
 
-def main():    
+def main():
     argv = sys.argv.copy()
 
     Constants.PKGDATADIR = "@pkgdatadir@"
 
     argv.pop(0)
-    
+
     if len(argv) == 0:
-        print('No command. Available: create, update, test')
+        print('No command. Available: create, update, test, clone, init')
         print_help()
         return
 
@@ -55,6 +60,10 @@ def main():
             update(argv)
         case 'test':
             test(argv)
+        case 'clone':
+            clone(argv)
+        case 'init':
+            init(argv)
         case _:
             print (f'Unknown command: {command}')
             return
@@ -62,7 +71,7 @@ def main():
 def create (argv:list[str]):
     language:str = None
     project_type:str = None
-    
+
     if len(argv) > 0:
         language = argv.pop(0)
 
@@ -84,7 +93,7 @@ def update (argv:list[str]):
     tag:str|None = None
     task_root:str|None = None
     test:bool = False
-    
+
     for arg in argv:
         if arg == '--test':
             test = True
@@ -122,6 +131,47 @@ def test (argv:list[str]):
             return
 
     Tester(working_dir, not without_deps, without_deps).test()
+    
+def clone (argv:list[str]):
+    names:list[str]|None = None
+    all_ = False
+
+    for arg in argv:
+        if arg == '--all':
+            all_ = True
+            argv.remove(arg)
+
+    if len(argv) > 0:
+        names = argv.copy()
+        argv.clear()
+
+    Cloner(names, all_).clone()
+
+def init (argv:list[str]):
+    language:str|None = None
+    project_type:str|None = None
+    name:str|None = None
+
+    if len(argv) > 0:
+        language = argv.pop(0)
+
+        if len(argv) > 0:
+            project_type = argv.pop(0)
+
+            if len(argv) > 0:
+                name = argv.pop(0)
+
+                if len(argv) > 0:
+                    print ('Too many args.')
+                    return
+            else:
+                print_error('Not enough args.')
+        else:
+            print_error('Not enough args.')
+    else:
+        print_error('Not enough args.')
+     
+    Initer(language, project_type, name, path).init()
 
 
 if __name__ == '__main__':

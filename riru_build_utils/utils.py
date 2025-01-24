@@ -38,14 +38,14 @@ GITERY = SshWrapper('gitery.altlinux.org', 'alt_rirusha')
 class Dependency:
     name:str
     version:str|None
-    
+
     def __str__(self):
         return self.name
 
 
 def ask(question: str) -> bool:
     i = input(question + ' [Y/n] ').lower()
-    
+
     if i == 'y':
         return True
     elif i == 'n':
@@ -63,25 +63,25 @@ def get_package_repo_version(name:str) -> str|None:
 def update_spec(true_spec_path:str, template_spec_path:str, version:str):
     changelog = ['%changelog\n']
     template_spec = []
-    
+
     if os.path.exists(true_spec_path):
         with open(true_spec_path, 'r') as file:
             is_changelog = False
-            
+
             for line in file.readlines():
                 if line.startswith('%changelog'):
                     is_changelog = True
                 else:
                     if is_changelog:
                         changelog.append(line);
-        
+
     with open(template_spec_path, 'r') as file:
         for line in file.readlines():
             if line.startswith('%changelog'):
                 break
-            
+
             template_spec.append(line.strip())
-        
+
     with open(true_spec_path, 'w') as file:
         for line in template_spec:
             if line.startswith('Version:') and '@LAST@' in line:
@@ -106,10 +106,10 @@ def print_on_no():
         'Ok...',
         'nah, whatever...',
     ]))
-    
+
 def find_appstream_file(project_dir:str) -> str|None:
     data_path = os.path.join(project_dir, 'data')
-    
+
     if os.path.exists(data_path):
         for file in os.listdir(data_path):
             if '.appdata.xml' in file or '.metainfo.xml' in file:
@@ -130,21 +130,21 @@ def create_spec(orig_spec_path:str):
     name:str = project_info.get('descriptive_name', '')
     license_ = project_info.get('license', ['GPL-3.0-or-later'])[0]
     dependencies:list[Dependency] = []
-    
-    from riru_build_utils.aliases import Aliases
 
-    aliases = Aliases()
-    if aliases.get(name) is None:
+    from riru_build_utils.projects import Projects
+
+    aliases = Projects()
+    if aliases.get_project(name) is None:
         print_error(f'Alias for {name} not found')
 
-    true_name, alias = aliases.get(name)
+    true_name, alias = aliases.get_project(name)
     url = alias.url.replace('.git', '')
-    
+
     appstream_path =find_appstream_file(os.path.curdir)
     if appstream_path:
         appstream = AppstreamComponent()
         appstream.load_file(appstream_path)
-        
+
         app_id = appstream.id
         summary = appstream.summary.get_default_text()
         description = appstream.description.to_plain_text()
@@ -155,7 +155,7 @@ def create_spec(orig_spec_path:str):
         app_id = '@ASSERT@'
         summary = '@ASSERT@'
         description = '%summary.'
-        
+
     meson_path = os.path.join(os.path.curdir, 'meson.build')
     with open(meson_path, 'r') as file:
         for line in file.readlines():
@@ -165,7 +165,7 @@ def create_spec(orig_spec_path:str):
                 dep_name = dep_string.split('dependency(')[1].strip().strip('()').split(',')[0].strip('\'')
                 if dep_name == 'threads':
                     continue
-                
+
                 version = None
                 if 'version:' in dep_string:
                     version_string = dep_string.split('version:')[1].strip().strip('()').split(',')[0].strip('\'')
@@ -183,10 +183,10 @@ def create_spec(orig_spec_path:str):
 
     if app_id == '@APP_ID@':
         app_id = find_meson_var('app_id', meson_path)
-        
+
         if not app_id:
             app_id = '@ASSERT@'
-            
+
     if name.startswith('lib'):
         gir_name = kebab2pascal(name.replace('lib', '', 1))
     else:
@@ -206,13 +206,13 @@ def create_spec(orig_spec_path:str):
     if not ask('All is chiky-pooky?'):
         print_on_no()
         return
-    
+
     spec_dir_path = os.path.join(os.path.curdir, 'build-aux', 'sisyphus')
     if not os.path.exists(spec_dir_path):
         os.makedirs(spec_dir_path)
 
     new_spec_path = os.path.join(spec_dir_path, f'{name}.spec')
-    
+
     if os.path.exists(new_spec_path):
         print(f'Spec file \'{new_spec_path}\' already exists.')
         if not ask('Overwrite?'):
@@ -236,11 +236,11 @@ def create_spec(orig_spec_path:str):
                 new_line = new_line.replace('@BUILD_DEPENDENCIES@', '\n'.join(map(lambda x: f'BuildRequires: pkgconfig({x.name}){f' {x.version}' if x.version else ''}', dependencies)))
 
                 new_file.write(new_line)
-                
+
     spec:list[str] = []
     with open(new_spec_path, 'r') as file:
         spec = file.readlines()
-    
+
     with open(new_spec_path, 'w') as file:
         for line in spec:
             if '@ASSERT@' in line:
@@ -279,13 +279,13 @@ def cut_version(version:str) -> tuple[str]:
 
     if api_version == '' or minor_version == '':
         print_error(f'Strange version \'{version}\'')
-    
+
     return (api_version, minor_version)
 
 def format_description(description:str) -> str:
     # https://www.altlinux.org/Spec#%25description
     MAX_SIZE = 72
-    
+
     new_desc:list[str] = []
     for line in description.split('\n'):
         new_desc_line = ''

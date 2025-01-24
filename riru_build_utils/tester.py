@@ -25,7 +25,7 @@ from subprocess import Popen
 import subprocess
 import tempfile
 
-from riru_build_utils.aliases import Aliases
+from riru_build_utils.projects import Projects
 from riru_build_utils.utils import get_project_info, print_error, update_spec
 
 
@@ -34,10 +34,10 @@ class Tester:
     working_dir:str|None
     cleanup:bool
     without_deps:bool
-    aliases:Aliases
+    aliases:Projects
 
-    def __init__(self, working_dir:str|None=None, cleanup:bool=True, without_deps:bool=False):        
-        self.aliases = Aliases()
+    def __init__(self, working_dir:str|None=None, cleanup:bool=True, without_deps:bool=False):
+        self.aliases = Projects()
 
         self.cleanup = cleanup
         self.working_dir = working_dir if working_dir is not None else os.curdir
@@ -64,7 +64,7 @@ class Tester:
 
         shutil.copytree(self.working_dir, test_dir, ignore=shutil.ignore_patterns('_build'))
 
-        if self.aliases.get(name) is None:
+        if self.aliases.get_project(name) is None:
             print_error(f'Alias \'{name}\' not found')
 
         gear_path = os.path.join(test_dir, '.gear')
@@ -75,20 +75,20 @@ class Tester:
 
         spec_path = os.path.join(gear_path, f'{name}.spec')
         template_spec_path = os.path.join(sisyphus_spec_dir, f'{name}.spec')
-        
+
         project_info = get_project_info()
         version = project_info.get('version')
 
         update_spec(spec_path, template_spec_path, version)
         Popen(['add_changelog', spec_path, '-e', f'- Test build'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
-        
+
         if self.cleanup:
             Popen(['hsh', '--cleanup-only'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
 
         if not self.without_deps:
-            for dep in self.aliases.get(name)[1].dependencies:
+            for dep in self.aliases.get_project(name)[1].dependencies:
                 dep_dir = os.path.join(tempfile.gettempdir(), 'riru-build-utils', 'test', name + dep)
-                url = self.aliases.get(dep)[1].url
+                url = self.aliases.get_project(dep)[1].url
                 if os.path.exists(dep_dir):
                     shutil.rmtree(dep_dir)
                 Popen(['git', 'clone', url, dep_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()

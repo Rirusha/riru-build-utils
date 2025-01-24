@@ -22,14 +22,14 @@ import paramiko
 
 
 class SshWrapper():
-    
+
     _ssh = paramiko.SSHClient()
-    
-    def __init__(self, host:str, username:str):        
+
+    def __init__(self, host:str, username:str):
         self.host = host
         self.username = username
         self._ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        
+
     def execute (self, command) -> list[str]:
         print (f'EXEC:\n\t{self.host.split('.')[0]} {command}')
         self._ssh.connect(
@@ -39,11 +39,11 @@ class SshWrapper():
             allow_agent=True
         )
         stdin, stdout, stderr = self._ssh.exec_command(command)
-        
+
         err = stderr.read().decode()
         if err:
             print(err)
-        
+
         out = stdout.read().decode().split('\n')
         if out:
             print (f'RETURN:\n\t{'\n\t'.join(out)}')

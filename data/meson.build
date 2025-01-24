@@ -1,5 +1,5 @@
 install_data(
-    'aliases.yml',
+    'projects.yml',
     install_dir: get_option('prefix') / get_option('datadir') / meson.project_name()
 )
 
