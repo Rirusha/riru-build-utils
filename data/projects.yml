@@ -51,13 +51,12 @@ projects:
     foldy:
         name: Foldy
         url: https://github.com/alt-gnome/Foldy.git
-        dependencies:
-            - libfoldy-1
 
     libfoldy-1:
         name: libfoldy
         api-version: 1
         url: https://github.com/alt-gnome/libfoldy.git
+        depricated: true
 
     ready-set:
         name: ready-set
