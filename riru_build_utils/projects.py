@@ -30,6 +30,8 @@ class Project:
     name:str
     api_version:str|None
     url:str
+    https_url:str
+    ssh_url:str
     depricated:bool
     dependencies:list[str]
 
@@ -54,8 +56,10 @@ class Projects:
 
                 if 'name' not in alias_data:
                     print_error(f'Alias {name} has no name')
-                if 'url' not in alias_data:
-                    print_error(f'Alias {name} has no url')
+                if 'https-url' not in alias_data:
+                    print_error(f'Alias {name} has no HTTPS url')
+                if 'ssh-url' not in alias_data:
+                    print_error(f'Alias {name} has no SSH url')
                 if 'api-version' not in alias_data:
                     alias_data['api-version'] = None
                 if 'dependencies' not in alias_data:
@@ -65,7 +69,9 @@ class Projects:
 
                 proj.name = alias_data['name']
                 proj.api_version = alias_data['api-version']
-                proj.url = alias_data['url']
+                proj.url = alias_data['https-url']
+                proj.https_url = alias_data['https-url']
+                proj.ssh_url = alias_data['ssh-url']
                 proj.depricated = alias_data['depricated']
                 proj.dependencies = alias_data['dependencies']
                 self._projects_data[name] = proj
@@ -74,12 +80,12 @@ class Projects:
                 for name, template_data in language_data.items():
                     template = Template()
 
-                    if 'url' not in alias_data:
-                        print_error(f'Alias {name} has no url')
+                    if 'https-url' not in alias_data:
+                        print_error(f'Alias {name} has no HTTPS url')
 
                     template.name = name
                     template.language = language
-                    template.url = template_data['url']
+                    template.url = template_data['https-url']
 
                     if language not in self._templates_data:
                         self._templates_data[language] = {}

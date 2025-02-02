@@ -62,8 +62,8 @@ class Cloner:
 
                     if ask(f'Path {clone_path} exists. Remove?'):
                         shutil.rmtree (clone_path)
-                        
-                Popen(['git', 'clone', proj.url, clone_path]).wait()
+
+                Popen(['git', 'clone', proj.ssh_url, clone_path]).wait()
 
         elif self.all_:
             Cloner(list(map(lambda x: x.name, filter(lambda x: not x.depricated, self.projects.get_all_projects()))), False, True).clone()
