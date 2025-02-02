@@ -1,6 +1,6 @@
 # Riru Build Utils
 
-Было ли у вас такое, что вы хотите собрать _Rirusha average project_ для вашей _ALT Linux Operation Sustem_?
+Было ли у вас такое, что вы хотите собрать _Rirusha average project_ для ваш _ALT Linux_?
 
 Тогда вы по адресу!
 
