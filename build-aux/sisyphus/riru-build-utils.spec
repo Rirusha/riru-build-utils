@@ -15,10 +15,12 @@ Vcs: https://github.com/Rirusha/riru-build-utils.git
 BuildArch: noarch
 
 Source: %name-%version.tar
+Patch: %name-%version-alt.patch
 
 Requires: rpm-utils
 Requires: gear
 Requires: /usr/bin/ssh
+Requires: gear-remotes-utils
 Requires: git
 
 BuildRequires(pre): rpm-macros-meson rpm-build-python3
