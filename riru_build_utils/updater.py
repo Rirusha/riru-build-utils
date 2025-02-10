@@ -30,6 +30,7 @@ import os
 # import requests
 from riru_build_utils.projects import Project, Projects
 from riru_build_utils.appstream_python.Component import AppstreamComponent
+from riru_build_utils.tester import Tester
 from riru_build_utils.utils import GITERY, GYLE, ask, find_appstream_file, get_package_repo_version, print_error, print_on_no, update_spec
 
 
@@ -40,10 +41,11 @@ class Updater:
     version:str|None
     tag:str|None
     root_task:str|None
-    test:bool
+    for_test:bool
+    with_test:bool
     alias:Project
 
-    def __init__(self, name:str|None, tag:str|None, root_task:str|None, test:bool):
+    def __init__(self, name:str|None, tag:str|None, root_task:str|None, for_test:bool, with_test:bool):
         aliases = Projects()
 
         if not name:
@@ -81,9 +83,13 @@ class Updater:
         self.name = name
         self.tag = tag
         self.root_task = root_task
-        self.test = test
+        self.for_test = for_test
+        self.with_test = with_test
 
     def update(self):
+        if self.with_test:
+            Tester().test()
+        
         root_tpm = os.path.join(tempfile.gettempdir(), 'riru-build-utils')
         wd = os.path.join(root_tpm, self.name)
         os.makedirs(wd, exist_ok=True)
@@ -119,7 +125,7 @@ class Updater:
         print('Version: ' + self.version)
         print('Tag: ' + self.tag)
         print('HasRootTask: ' + ('true' if self.root_task is not None else 'false'))
-        print('Test: ' + ('true' if self.test else 'false'))
+        print('Test: ' + ('true' if self.for_test else 'false'))
         print ()
 
         if not ask('All is chiky-pooky?'):
@@ -261,7 +267,7 @@ class Updater:
         task_id = self.root_task if self.root_task is not None else GYLE.execute('task new')[0]
 
         for dep in self.alias.dependencies:
-            Updater(dep, None, task_id, self.test).update()
+            Updater(dep, None, task_id, self.for_test).update()
 
         try:
             GYLE.execute(f'task add {task_id} repo {self.name} {self.version}-alt1')
@@ -271,7 +277,7 @@ class Updater:
             sys.exit(1)
 
         if self.root_task is None:
-            GYLE.execute(f'task run {task_id}{' --commit' if not self.test else ''}')
+            GYLE.execute(f'task run {task_id}{' --commit' if not self.for_test else ''}')
             print (f'Done: \'{self.name}\' with task id: {task_id}')
         else:
             print (f'Done: \'{self.name}\'')

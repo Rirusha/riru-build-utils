@@ -34,9 +34,9 @@ from riru_build_utils.utils import print_error
 def print_help():
     print ('Usage:')
     print ('\trbu create <language> <project type>')
-    print ('\trbu update <git url or alias name> [<tag>] [<task-id-root>] [--test]')
+    print ('\trbu update <git url or alias name> [<tag>] [<task-id-root>] [--for-test] [--without-test]')
     print ('\trbu test [<working dir>] [--without-deps]')
-    print ('\trbu clone [<names>] [--with-deps]|[--all]')
+    print ('\trbu clone ([<names>] [--with-deps])|[--all]')
     print ('\trbu init <language> <project type> <name>')
 
 def main():
@@ -92,11 +92,15 @@ def update (argv:list[str]):
     name:str|None = None
     tag:str|None = None
     task_root:str|None = None
-    test:bool = False
+    for_test:bool = False
+    with_test:bool = True
 
     for arg in argv:
-        if arg == '--test':
-            test = True
+        if arg == '--for-test':
+            for_test = True
+            argv.remove(arg)
+        if arg == '--without-test':
+            with_test = False
             argv.remove(arg)
 
     if len(argv) > 0:
@@ -112,7 +116,7 @@ def update (argv:list[str]):
                     print ('Too many args.')
                     return
 
-    Updater(name, tag, task_root, test).update()
+    Updater(name, tag, task_root, for_test, with_test).update()
 
 def test (argv:list[str]):
     working_dir:str|None = None
