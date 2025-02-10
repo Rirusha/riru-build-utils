@@ -87,9 +87,6 @@ class Updater:
         self.with_test = with_test
 
     def update(self):
-        if self.with_test:
-            Tester().test()
-        
         root_tpm = os.path.join(tempfile.gettempdir(), 'riru-build-utils')
         wd = os.path.join(root_tpm, self.name)
         os.makedirs(wd, exist_ok=True)
@@ -131,6 +128,9 @@ class Updater:
         if not ask('All is chiky-pooky?'):
             print_on_no()
             return
+        
+        if self.with_test:
+            Tester().test()
 
         os.chdir(wd)
 
