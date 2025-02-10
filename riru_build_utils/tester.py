@@ -23,6 +23,7 @@ import os
 import shutil
 from subprocess import Popen
 import subprocess
+import sys
 import tempfile
 
 from riru_build_utils.projects import Projects
@@ -98,4 +99,6 @@ class Tester:
 
         os.chdir(test_dir)
         Popen(['git', 'add', '.'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
-        Popen(['gear-hsh', '-v', '--commit', '--no-sisyphus-check=gpg,packager', '--lazy-cleanup']).wait()
+        return_code = Popen(['gear-hsh', '-v', '--commit', '--no-sisyphus-check=gpg,packager', '--lazy-cleanup']).wait()
+        if return_code != 0:
+            sys.exit (1)
