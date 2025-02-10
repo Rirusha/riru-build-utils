@@ -72,6 +72,7 @@ class Tester:
         with open(os.path.join(gear_path, 'rules'), 'w') as file:
             file.write(f'spec: .gear/{name}.spec\n')
             file.write(f'tar: .\n')
+            file.write(f'diff: . . exclude=.gear/** name=@name@-@version@-alt.patch')
 
         spec_path = os.path.join(gear_path, f'{name}.spec')
         template_spec_path = os.path.join(sisyphus_spec_dir, f'{name}.spec')
