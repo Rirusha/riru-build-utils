@@ -95,7 +95,7 @@ def update (argv:list[str]):
     for_test:bool = False
     with_test:bool = True
 
-    for arg in argv:
+    for arg in argv.copy():
         if arg == '--for-test':
             for_test = True
             argv.remove(arg)
