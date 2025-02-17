@@ -19,13 +19,15 @@ Patch: %name-%version-alt.patch
 
 Requires: rpm-utils
 Requires: gear
-Requires: /usr/bin/ssh
+Requires: openssh-clients
 Requires: gear-remotes-utils
 Requires: git
 
 BuildRequires(pre): rpm-macros-meson rpm-build-python3
 BuildRequires: meson
 BuildRequires: python3-module-paramiko
+BuildRequires: python3-module-lxml
+BuildRequires: python3-module-requests
 
 %description
 %summary.
