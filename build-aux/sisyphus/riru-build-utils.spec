@@ -36,6 +36,7 @@ Contains update, test and create commands.
 
 %prep
 %setup
+%autopatch -p1
 
 %build
 %meson
